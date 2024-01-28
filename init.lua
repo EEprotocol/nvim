@@ -76,7 +76,7 @@ require("tokyonight").setup(
 		colors.fg_gutter="#ffba00"--number color
 		colors.fg_dark="#ff9955"--command line
 		colors.comment="#889fdd"--comment out
-		colors.fg="#2888ef"--object Value
+		colors.fg="#aaccee"--object Value
 	end
 	}
 )
@@ -95,7 +95,7 @@ ccc.setup({
   },
 })
 
-lightline={
+vim.g.lightline={
 				colorscheme="powerline",
 				active={
 					left= { { 'mode', 'paste' },
@@ -139,3 +139,16 @@ vim.g.python3_host_prog = python3_path
 
 -- g:loaded_python3_providerを設定する
 vim.g.loaded_python3_provider = 1
+
+
+--これからやっておくべきこと
+--スニペット構成
+--GITブランチの表示
+--自動補完機能
+--変更箇所表示
+--コマンド設定
+--texの構成
+--ワークスペース構成
+--フォーマッタ構成
+--フォントサイズ調整in qt
+--lightline改善，ファイル読み込みとかワークスペースとか
