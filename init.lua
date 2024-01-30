@@ -9,6 +9,7 @@ vim.o.cursorline = true						-- 行線表示
 vim.o.colorcolumn = "80"		  		-- 列線表示
 vim.o.directory="./"							-- swap file place
 vim.o.smartindent=true            -- mk indent according to the block
+vim.o.guifont="CaskaydiaMono Nerd Font Mono"
 --local setting
 vim.opt.undofile=true
 local option={
@@ -25,6 +26,7 @@ vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = t
 --colorscheme
 --vim.cmd('colorscheme desert')
 
+-------------------------------------------------------------------------------
 --lazy...!(plugin)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -61,6 +63,7 @@ require("lazy").setup(
 		{"nvim-telescope/telescope.nvim", tag='0.1.5'},
 		{"nvim-telescope/telescope-file-browser.nvim"},
     {"uga-rosa/ccc.nvim"},
+    {"neovim/nvim-lspconfig"},
 		{"natecraddock/workspaces.nvim"}
 	}
 )
@@ -115,7 +118,10 @@ vim.g.lightline={
 		}
 }
 
+--lspconfig setting
+require"lspconfig".pyright.setup{}
 
+-------------------------------------------------------------------------------
 
 -- プラグインのキーマッピング (例: telescope)
 vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', { 
@@ -140,7 +146,7 @@ vim.g.python3_host_prog = python3_path
 -- g:loaded_python3_providerを設定する
 vim.g.loaded_python3_provider = 1
 
-
+-------------------------------------------------------------------------------
 --これからやっておくべきこと
 --スニペット構成
 --GITブランチの表示
