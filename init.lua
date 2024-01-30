@@ -4,9 +4,19 @@ vim.o.number = true               -- 行番号表示
 vim.o.relativenumber = true       -- 相対行番号表示
 vim.o.tabstop = 2                 -- タブの幅
 vim.o.softtabstop = 2             -- インデントに使用するスペースの数
-vim.o.shiftwidth = 4              -- シフト幅
+vim.o.shiftwidth = 2              -- シフト幅
 vim.o.cursorline = true						-- 行線表示
 vim.o.colorcolumn = "80"		  		-- 列線表示
+vim.o.directory="./"							-- swap file place
+vim.o.smartindent=true            -- mk indent according to the block
+--local setting
+vim.opt.undofile=true
+local option={
+	encoding="utf-8",
+	fileencoding="utf-8",
+	undofile=true,
+	undodir="~/.config/nvim"
+}
 
 -- キーマッピング
 vim.api.nvim_set_keymap('n', '<Space>', ':nohlsearch<CR>', { noremap = true, silent = true })
@@ -28,17 +38,9 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
-
---(lazy main setting)
---require("lazy").setup(
---	{
---		{"plugin1",option1},
---		{"akinsho/toggleterm.nvim"}
---	}
---)
 require("lazy").setup(
 	{
-		{"lervag/vimtex"},
+		{"lervag/vimtex",ft={tex}},
 		{"akinsho/toggleterm.nvim",version="*",config=true},
 		{"itchyny/lightline.vim"},
 		{"folke/tokyonight.nvim",
@@ -63,6 +65,7 @@ require("lazy").setup(
 	}
 )
 
+--tokyonight setting
 require("tokyonight").setup(
 	{
 	style="moon",
@@ -76,13 +79,13 @@ require("tokyonight").setup(
 		colors.fg_gutter="#ffba00"--number color
 		colors.fg_dark="#ff9955"--command line
 		colors.comment="#889fdd"--comment out
-		colors.fg="#aaccee"--object Value
+		colors.fg="#aaccee"--地の文
 	end
 	}
 )
-
 vim.cmd[[colorscheme tokyonight]]
 
+--CCC setting
 local ccc = require("ccc")
 ccc.setup({
   highlighter = {
@@ -95,48 +98,45 @@ ccc.setup({
   },
 })
 
-vim.g.lightline={
-				colorscheme="powerline",
-				active={
-					left= { { 'mode', 'paste' },
-					{ 'gitbranch', 'readonly', 'filename', 'modified' } 	}
-						
-				},
-				component_function={
-						gitbranch="FugitiveHead"
-				}
-
-		}
-
---local setting
-vim.opt.undofile=true
-local option={
-	encoding="utf-8",
-	fileencoding="utf-8",
-	undofile=true,
-	undodir="~/.config/nvim"
+--ToggleTerm setting
+require("toggleterm").setup{
+	open_mapping=[[<c-\>]]
 }
+
+--lightline setting
+vim.g.lightline={
+		colorscheme="powerline",
+		active={
+			left= { { 'mode', 'paste' },
+			{ 'gitbranch', 'readonly', 'filename', 'modified' } 	}
+		},
+		component_function={
+				gitbranch="FugitiveHead"
+		}
+}
+
+
 
 -- プラグインのキーマッピング (例: telescope)
 vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', { 
 	noremap = true, silent = true 
 })
 
-vim.api.nvim_set_keymap('n', '<Leader>ls', '<cmd>Fern . -drawer -width=25<CR><cmd>set nonumber<CR><cmd>set norelativenumber<CR>', { 
+vim.api.nvim_set_keymap('n', '<Leader>;;', '<cmd>Fern . -drawer -width=25<CR><cmd>set nonumber<CR><cmd>set norelativenumber<CR>', { 
 	noremap = true, silent = true 
 })
 
-vim.api.nvim_set_keymap('n', '<Leader>tt', '<cmd>ToggleTerm<CR><cmd>set nonumber<CR><cmd>set norelativenumber<CR>',{
+vim.api.nvim_set_keymap('n', '<Leader>tt', '<cmd>ToggleTerm direction=horizontal size=12 name=here<CR><cmd>set nonumber<CR><cmd>set norelativenumber<CR>',{
 		noremap = true, silent = true --再帰的マッピング無効化　エラー表示なし
 })
 
+vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', {noremap = true})--terminal normalmode
+vim.api.nvim_set_keymap('t', '<c-[>', '<C-\\><C-n>', {noremap = true})--terminal normalmode
 
 -- python3のパスを取得する
 local python3_path = vim.fn.trim(vim.fn.system('which python3'))
-
 -- g:python3_host_progにpython3のパスを設定する
 vim.g.python3_host_prog = python3_path
-
 -- g:loaded_python3_providerを設定する
 vim.g.loaded_python3_provider = 1
 
@@ -145,10 +145,24 @@ vim.g.loaded_python3_provider = 1
 --スニペット構成
 --GITブランチの表示
 --自動補完機能
---変更箇所表示
+--変更箇所表示(gitみたいな縦線)
 --コマンド設定
 --texの構成
 --ワークスペース構成
 --フォーマッタ構成
 --フォントサイズ調整in qt
 --lightline改善，ファイル読み込みとかワークスペースとか
+--gitも何とかしよう
+--変数が使われてるかどうかの表示
+--@windows ターミナル：powershellへ
+--オープニング画面とかつけたい，VScode的な,nvchad的な
+--自動保存に役立つ何か
+--コピペはクリップボードに一元化したい
+--ファイルタイプ別のプラグイン呼び出し設定
+--起動高速化
+--タブも何とかしてえ
+--lspらへんの話の整理
+--不要行間表示
+--新しく開くファイルはタブで開く,だけどスプリットさせたい
+--✓ターミナル分割　
+--インデントラインを引く
