@@ -9,7 +9,8 @@ vim.o.cursorline = true						-- 行線表示
 vim.o.colorcolumn = "80"		  		-- 列線表示
 vim.o.directory="./"							-- swap file place
 vim.o.smartindent=true            -- mk indent according to the block
-vim.o.guifont="CaskaydiaMono Nerd Font Mono"
+vim.o.guifont="CaskaydiaMono Nerd Font Mono"--Font
+vim.o.hlsearch=true								--high light for search
 --local setting
 vim.opt.undofile=true
 local option={
@@ -18,13 +19,11 @@ local option={
 	undofile=true,
 	undodir="~/.config/nvim"
 }
-
 -- キーマッピング
 vim.api.nvim_set_keymap('n', '<Space>', ':nohlsearch<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = true })
-
 --colorscheme
---vim.cmd('colorscheme desert')
+vim.cmd('colorscheme desert')
 
 -------------------------------------------------------------------------------
 --lazy...!(plugin)
@@ -42,8 +41,11 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup(
 	{
-		{"lervag/vimtex",ft={tex}},
-		{"akinsho/toggleterm.nvim",version="*",config=true},
+		{"lervag/vimtex",ft={"tex"}},
+		{"akinsho/toggleterm.nvim",
+		version="*",
+		config=true
+		},
 		{"itchyny/lightline.vim"},
 		{"folke/tokyonight.nvim",
 		lazy=false,
@@ -53,6 +55,7 @@ require("lazy").setup(
 --		{'nvim-lualine/lualine.nvim',
 --    dependencies = { 'nvim-tree/nvim-web-devicons' }
 --    --	},
+
 		{"windwp/nvim-autopairs",
 		event="InsertEnter",
 		opts={}--this is equalent to setup ({}) fundtion
@@ -63,11 +66,146 @@ require("lazy").setup(
 		{"nvim-telescope/telescope.nvim", tag='0.1.5'},
 		{"nvim-telescope/telescope-file-browser.nvim"},
     {"uga-rosa/ccc.nvim"},
-    {"neovim/nvim-lspconfig"},
+    {"neovim/nvim-lspconfig"},--lsp
+    {"williamboman/mason.nvim"},
+    {"williamboman/mason-lspconfig.nvim"},
+
+
+		--[[{"Shougo/ddc.vim"},--compliation#1
+
+		{"prabirshrestha/vim-lsp"},
+		{"mattn/vim-lsp-settings"},
+
+    {"vim-denops/denops.vim"},
+    {"Shougo/ddc-ui-native"},
+    {"Shougo/ddc-source-around"},
+    {"Shougo/ddc-matcher_head"},
+		{"matsui54/ddc-buffer"},
+    {"Shougo/ddc-sorter_rank"},
+		{"tani/ddc-fuzzy"},
+    {"Shougo/ddc-converter_remove_overlap"},
+    {"LumaKernel/ddc-file"},]]
+
+		{ "L3MON4D3/LuaSnip" },--compilation#2
+
+		{ "hrsh7th/nvim-cmp",event="InsertEnter" },
+		{ "hrsh7th/cmp-nvim-lsp",event="InsertEnter"},
+		{"hrsh7th/vim-vsnip",event="InsertEnter"},
+		{ "hrsh7th/cmp-buffer" },
+		{ "saadparwaiz1/cmp_luasnip" },
+		{"mhartington/formatter.nvim"},
+		{"vim-skk/skkeleton"},
+
+
 		{"natecraddock/workspaces.nvim"}
 	}
 )
 
+-------------------------------------------------------------------------------
+--LSP setting
+-------------------------------------------------------------------------------
+-- lspのハンドラーに設定
+capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+--mason setting
+require("mason").setup()
+-- launch-test.lua
+vim.lsp.start({
+  name = "lua_ls", -- 管理上の名前
+  cmd = { "lua-language-server" }, -- Language server を起動するためのコマンド
+  root_dir = vim.fs.dirname(vim.fs.find({ ".luarc.json" }, { upward = true })[1]), -- プロジェクトのルートディレクトリを検索する
+})
+require"lspconfig".lua_ls.setup{}
+--mason config
+require("mason-lspconfig").setup{
+	ensure_installed={"lua_ls","texlab","pyright","arduino_language_server"}
+}
+-- lspの設定後に追加
+vim.opt.completeopt = "menu,menuone,noselect"
+
+local cmp = require"cmp"
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      require("luasnip").lsp_expand(args.body)
+		end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ["<S-tab>"] = cmp.mapping.select_prev_item(),
+    ["<tab>"] = cmp.mapping.select_next_item(),
+    ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<C-e>"] = cmp.mapping.close(),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+  }),
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },
+    { name = "luasnip" },
+  }, {
+    { name = "buffer" },
+  })
+})
+
+
+-------------------------------------------------------------------------------
+--Formatter settings
+-------------------------------------------------------------------------------
+-- Utilities for creating configurations
+local util = require "formatter.util"
+
+-- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
+require("formatter").setup {
+  -- Enable or disable logging
+  logging = true,
+  -- Set the log level
+  log_level = vim.log.levels.WARN,
+  -- All formatter configurations are opt-in
+  filetype = {
+    -- Formatter configurations for filetype "lua" go here
+    -- and will be executed in order
+    lua = {
+      -- "formatter.filetypes.lua" defines default configurations for the
+      -- "lua" filetype
+      require("formatter.filetypes.lua").stylua,
+
+      -- You can also define your own configuration
+      function()
+        -- Supports conditional formatting
+        if util.get_current_buffer_file_name() == "special.lua" then
+          return nil
+        end
+
+        -- Full specification of configurations is down below and in Vim help
+        -- files
+        return {
+          exe = "stylua",
+          args = {
+            "--search-parent-directories",
+            "--stdin-filepath",
+            util.escape_path(util.get_current_buffer_file_path()),
+            "--",
+            "-",
+          },
+          stdin = true,
+        }
+      end
+    },
+
+    -- Use the special "*" filetype for defining formatter configurations on
+    -- any filetype
+    ["*"] = {
+      -- "formatter.filetypes.any" defines default configurations for any
+      -- filetype
+      require("formatter.filetypes.any").remove_trailing_whitespace
+    }
+  }
+}
+
+
+-------------------------------------------------------------------------------
+--Color Scheme
+-------------------------------------------------------------------------------
 --tokyonight setting
 require("tokyonight").setup(
 	{
@@ -106,8 +244,9 @@ require("toggleterm").setup{
 	open_mapping=[[<c-\>]]
 }
 
+
 --lightline setting
-vim.g.lightline={
+--[[vim.g.lightline={
 		colorscheme="powerline",
 		active={
 			left= { { 'mode', 'paste' },
@@ -116,11 +255,19 @@ vim.g.lightline={
 		component_function={
 				gitbranch="FugitiveHead"
 		}
-}
-
---lspconfig setting
-require"lspconfig".pyright.setup{}
-
+}]]
+vim.cmd[[
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead'
+      \ },
+      \ }
+]]
 -------------------------------------------------------------------------------
 
 -- プラグインのキーマッピング (例: telescope)
@@ -169,6 +316,6 @@ vim.g.loaded_python3_provider = 1
 --タブも何とかしてえ
 --lspらへんの話の整理
 --不要行間表示
---新しく開くファイルはタブで開く,だけどスプリットさせたい
+--新しく開くファイルはタブで開く,だけどvスプリットさせたい
 --✓ターミナル分割　
 --インデントラインを引く
