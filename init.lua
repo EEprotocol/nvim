@@ -24,7 +24,6 @@ vim.api.nvim_set_keymap('n', '<Space>', ':nohlsearch<CR>', { noremap = true, sil
 vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = true })
 --colorscheme
 vim.cmd('colorscheme desert')
-
 -------------------------------------------------------------------------------
 --lazy...!(plugin)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -55,7 +54,6 @@ require("lazy").setup(
 --		{'nvim-lualine/lualine.nvim',
 --    dependencies = { 'nvim-tree/nvim-web-devicons' }
 --    --	},
-
 		{"windwp/nvim-autopairs",
 		event="InsertEnter",
 		opts={}--this is equalent to setup ({}) fundtion
@@ -66,28 +64,13 @@ require("lazy").setup(
 		{"nvim-telescope/telescope.nvim", tag='0.1.5'},
 		{"nvim-telescope/telescope-file-browser.nvim"},
     {"uga-rosa/ccc.nvim"},
+		{"BurntSushi/ripgrep"},
+		{"nvim-treesitter/nvim-treesitter"},
     {"neovim/nvim-lspconfig"},--lsp
     {"williamboman/mason.nvim"},
     {"williamboman/mason-lspconfig.nvim"},
-
-
-		--[[{"Shougo/ddc.vim"},--compliation#1
-
-		{"prabirshrestha/vim-lsp"},
-		{"mattn/vim-lsp-settings"},
-
-    {"vim-denops/denops.vim"},
-    {"Shougo/ddc-ui-native"},
-    {"Shougo/ddc-source-around"},
-    {"Shougo/ddc-matcher_head"},
-		{"matsui54/ddc-buffer"},
-    {"Shougo/ddc-sorter_rank"},
-		{"tani/ddc-fuzzy"},
-    {"Shougo/ddc-converter_remove_overlap"},
-    {"LumaKernel/ddc-file"},]]
-
-		{ "L3MON4D3/LuaSnip" },--compilation#2
-
+		--compilation:ddcを使おうとしていたが挫折
+		{ "L3MON4D3/LuaSnip",tag="v2.*",dependencies="saadparwaiz1/cmp_luasnip","rafamadriz/friendly-snippets"},
 		{ "hrsh7th/nvim-cmp",event="InsertEnter" },
 		{ "hrsh7th/cmp-nvim-lsp",event="InsertEnter"},
 		{"hrsh7th/vim-vsnip",event="InsertEnter"},
@@ -100,7 +83,7 @@ require("lazy").setup(
 		{"natecraddock/workspaces.nvim"}
 	}
 )
-
+--
 -------------------------------------------------------------------------------
 --LSP setting
 -------------------------------------------------------------------------------
@@ -109,21 +92,23 @@ capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 --mason setting
 require("mason").setup()
--- launch-test.lua
-vim.lsp.start({
-  name = "lua_ls", -- 管理上の名前
-  cmd = { "lua-language-server" }, -- Language server を起動するためのコマンド
-  root_dir = vim.fs.dirname(vim.fs.find({ ".luarc.json" }, { upward = true })[1]), -- プロジェクトのルートディレクトリを検索する
-})
-require"lspconfig".lua_ls.setup{}
 --mason config
 require("mason-lspconfig").setup{
 	ensure_installed={"lua_ls","texlab","pyright","arduino_language_server"}
 }
+-- launch-test.lua
+--[[vim.lsp.start({
+  name = "lua_ls", -- 管理上の名前
+  cmd = { "lua-language-server" }, -- Language server を起動するためのコマンド
+  root_dir = vim.fs.dirname(vim.fs.find({ ".luarc.json" }, { upward = true })[1]), -- プロジェクトのルートディレクトリを検索する
+})]]
+require"lspconfig".lua_ls.setup{}
+require"lspconfig".pyright.setup{}
+require"lspconfig".texlab.setup{}
 -- lspの設定後に追加
 vim.opt.completeopt = "menu,menuone,noselect"
-
-local cmp = require"cmp"
+local cmp = require("cmp")
+local luasnip = require("luasnip")
 cmp.setup({
   snippet = {
     expand = function(args)
@@ -138,6 +123,13 @@ cmp.setup({
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-e>"] = cmp.mapping.close(),
     ["<CR>"] = cmp.mapping.confirm({ select = true }),
+		['<C-k>'] = cmp.mapping(function(fallback)
+      if luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, { 'i', 's' })
   }),
   sources = cmp.config.sources({
     { name = "nvim_lsp" },
@@ -146,7 +138,73 @@ cmp.setup({
     { name = "buffer" },
   })
 })
+-------------------------------------------------------------------------------
+--snippet settings
+-------------------------------------------------------------------------------
+local ls = require("luasnip")
+local s = ls.snippet
+local sn = ls.snippet_node
+local isn = ls.indent_snippet_node
+local t = ls.text_node
+local i = ls.insert_node
+local f = ls.function_node
+local c = ls.choice_node
+local d = ls.dynamic_node
+local r = ls.restore_node
+local events = require("luasnip.util.events")
+local ai = require("luasnip.nodes.absolute_indexer")
+local extras = require("luasnip.extras")
+local l = extras.lambda
+local rep = extras.rep
+local p = extras.partial
+local m = extras.match
+local n = extras.nonempty
+local dl = extras.dynamic_lambda
+local fmt = require("luasnip.extras.fmt").fmt
+local fmta = require("luasnip.extras.fmt").fmta
+local conds = require("luasnip.extras.expand_conditions")
+local postfix = require("luasnip.extras.postfix").postfix
+local types = require("luasnip.util.types")
+local parse = require("luasnip.util.parser").parse_snippet
+local ms = ls.multi_snippet
+local k = require("luasnip.nodes.key_indexer").new_key
 
+local function fn(
+  args,     -- text from i(2) in this example i.e. { { "456" } }
+  parent,   -- parent snippet or parent node
+  user_args -- user_args from opts.user_args 
+)
+   return '[' .. args[1][1] .. user_args .. ']'
+end
+ls.add_snippets("all", {
+		s("trig", {
+		i(1), t '<-i(1) ',
+		f(fn,  -- callback (args, parent, user_args) -> string
+    {2}, -- node indice(s) whose text is passed to fn, i.e. i(2)
+    { user_args = { "user_args_value" }} -- opts
+		),
+		t ' i(2)->', i(2), t '<-i(2) i(0)->', i(0)
+		}),
+
+		s("HW", {
+			t("Hello, World!")
+		})
+  --[[lua = {
+    s({
+      t = 'std',
+      }, {
+      t({'#include <bits/stdc++.h>', 'using namespace std;', ''}),
+      i(0),
+    }),
+  },]]
+})
+ls.add_snippets("lua",
+{
+	s("lua",{
+		t("haste on"),i(0),t("the moon")
+	})
+}
+)
 
 -------------------------------------------------------------------------------
 --Formatter settings
