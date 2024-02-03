@@ -9,7 +9,8 @@ vim.o.cursorline = true						-- 行線表示
 vim.o.colorcolumn = "80"		  		-- 列線表示
 vim.o.directory="./"							-- swap file place
 vim.o.smartindent=true            -- mk indent according to the block
-vim.o.guifont="CaskaydiaMono Nerd Font Mono"--Font
+vim.o.guifont="Caskaydiamono Nerd Font Mono:h13"--Font
+--vim.o.guifont="default:h20"
 vim.o.hlsearch=true								--high light for search
 --local setting
 vim.opt.undofile=true
@@ -83,7 +84,17 @@ require("lazy").setup(
 		{"natecraddock/workspaces.nvim"}
 	}
 )
---
+-------------------------------------------------------------------------------
+--Luaのお勉強
+-------------------------------------------------------------------------------
+local function filetype()
+	if vim.bo.filetype =="tex" then
+		return "tex"
+	else
+		return "other"
+	end
+end
+print(filetype)
 -------------------------------------------------------------------------------
 --LSP setting
 -------------------------------------------------------------------------------
