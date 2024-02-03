@@ -82,6 +82,19 @@ require("lazy").setup(
 		{"mhartington/formatter.nvim"},
 		{"vim-skk/skkeleton"},
 		{"pocco81/auto-save.nvim",},
+		{"romgrk/barbar.nvim",dependencies = {
+      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+    },
+    init = function() vim.g.barbar_auto_setup = false end,
+    opts = {
+      -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
+      animation = true,
+      -- insert_at_start = true,
+      -- …etc.
+    },
+    version = '^1.0.0', -- optional: only update when a new 1.x version is released
+		},
 
 
 		{"natecraddock/workspaces.nvim"}
@@ -400,6 +413,7 @@ vim.api.nvim_set_keymap('n', '<Leader>tt', '<cmd>ToggleTerm direction=horizontal
 
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', {noremap = true})--terminal normalmode
 vim.api.nvim_set_keymap('t', '<c-[>', '<C-\\><C-n>', {noremap = true})--terminal normalmode
+--ターミナル分割は2<C-\>でできます！
 
 -- python3のパスを取得する
 local python3_path = vim.fn.trim(vim.fn.system('which python3'))
