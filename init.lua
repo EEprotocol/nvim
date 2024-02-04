@@ -50,7 +50,8 @@ require("lazy").setup(
 		},
 		{"itchyny/lightline.vim"},
 		{"folke/tokyonight.nvim",
-		lazy=false,
+		lazy=true,
+		cmd="ToggleTerm",
 		priority=1000,
 		opts={}
 		},
@@ -70,23 +71,27 @@ require("lazy").setup(
 		{"BurntSushi/ripgrep"},
 		{"nvim-treesitter/nvim-treesitter"},
     {"neovim/nvim-lspconfig"},--lsp
-    {"williamboman/mason.nvim"},
-    {"williamboman/mason-lspconfig.nvim"},
+    {"williamboman/mason.nvim",lazy=true,cmd="Mason"},
+    {"williamboman/mason-lspconfig.nvim",lazy=true,cmd="Mason"},
 		--compilation:ddcを使おうとしていたが挫折
-		{ "L3MON4D3/LuaSnip",tag="v2.*",dependencies="saadparwaiz1/cmp_luasnip","rafamadriz/friendly-snippets"},
+		{ "L3MON4D3/LuaSnip",
+		version="v2.*",
+		build="make install_jsregexp",
+		dependencies="saadparwaiz1/cmp_luasnip","rafamadriz/friendly-snippets",
+		event="InsertEnter"
+		},
 		{ "hrsh7th/nvim-cmp",event="InsertEnter" },
 		{ "hrsh7th/cmp-nvim-lsp",event="InsertEnter"},
 		{"hrsh7th/vim-vsnip",event="InsertEnter"},
-		{ "hrsh7th/cmp-buffer" },
-		{ "saadparwaiz1/cmp_luasnip" },
+		{ "hrsh7th/cmp-buffer",event="InsertEnter"},
 		{"mhartington/formatter.nvim"},
-		{"vim-skk/skkeleton"},
-		{"pocco81/auto-save.nvim",},
+		{"vim-skk/skkeleton",event="InsertEnter"},
+		{"pocco81/auto-save.nvim"},
 		{"romgrk/barbar.nvim",dependencies = {
       'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
       'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
     },
-    init = function() vim.g.barbar_auto_setup = false end,
+    init = function() vim.g.barbar_auto_setup = true end,
     opts = {
       -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
       animation = true,
@@ -95,9 +100,8 @@ require("lazy").setup(
     },
     version = '^1.0.0', -- optional: only update when a new 1.x version is released
 		},
-
-
-		{"natecraddock/workspaces.nvim"}
+		{"natecraddock/workspaces.nvim"},
+		{"dstein64/vim-startuptime"}
 	}
 )
 --
@@ -158,6 +162,7 @@ cmp.setup({
 -------------------------------------------------------------------------------
 --snippet settings
 -------------------------------------------------------------------------------
+--
 local ls = require("luasnip")
 local s = ls.snippet
 local sn = ls.snippet_node
@@ -222,6 +227,8 @@ ls.add_snippets("lua",
 	})
 }
 )
+
+require("luasnip.loaders.from_vscode").lazy_load({paths={"./snippets"}})
 
 -------------------------------------------------------------------------------
 --Formatter settings
@@ -364,7 +371,7 @@ require("auto-save").setup{
 
     execution_message = {
 		message = function() -- message to print on save
-			return ("AutoSave: saved at " .. vim.fn.strftime("%H:%M:%S"))
+			return ("AutoSave: saved at " .. vim.fn.strftime("%Y/%b/%d %H:%M:%S"))
 		end,
 		dim = 0.18, -- dim the color of `message`
 		cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
