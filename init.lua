@@ -20,6 +20,7 @@ local option={
 	undofile=true,
 	undodir="~/.config/nvim"
 }
+
 -- キーマッピング
 vim.api.nvim_set_keymap('n', '<Space>', ':nohlsearch<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = true })
@@ -71,13 +72,13 @@ require("lazy").setup(
 		{"BurntSushi/ripgrep"},
 		{"nvim-treesitter/nvim-treesitter"},
     {"neovim/nvim-lspconfig"},--lsp
-    {"williamboman/mason.nvim",lazy=true,cmd="Mason"},
-    {"williamboman/mason-lspconfig.nvim",lazy=true,cmd="Mason"},
+    {"williamboman/mason.nvim",lazy=true, },
+    {"williamboman/mason-lspconfig.nvim",lazy=true,},
 		--compilation:ddcを使おうとしていたが挫折
 		{ "L3MON4D3/LuaSnip",
 		version="v2.*",
 		build="make install_jsregexp",
-		dependencies="saadparwaiz1/cmp_luasnip","rafamadriz/friendly-snippets",
+		dependencies="saadparwaiz1/cmp_luasnip",
 		event="InsertEnter"
 		},
 		{ "hrsh7th/nvim-cmp",event="InsertEnter" },
@@ -104,7 +105,8 @@ require("lazy").setup(
 		{"dstein64/vim-startuptime"}
 	}
 )
---
+
+--haste on spriclar the moon
 -------------------------------------------------------------------------------
 --LSP setting
 -------------------------------------------------------------------------------
@@ -126,6 +128,7 @@ require("mason-lspconfig").setup{
 require"lspconfig".lua_ls.setup{}
 require"lspconfig".pyright.setup{}
 require"lspconfig".texlab.setup{}
+require"lspconfig".arduino_language_server.setup{}
 -- lspの設定後に追加
 vim.opt.completeopt = "menu,menuone,noselect"
 local cmp = require("cmp")
@@ -207,28 +210,24 @@ ls.add_snippets("all", {
 		),
 		t ' i(2)->', i(2), t '<-i(2) i(0)->', i(0)
 		}),
-
+		
 		s("HW", {
-			t("Hello, World!")
+			t("Hello,",i(1)," World!",i(1),i(0))
 		})
-  --[[lua = {
-    s({
-      t = 'std',
-      }, {
-      t({'#include <bits/stdc++.h>', 'using namespace std;', ''}),
-      i(0),
-    }),
-  },]]
 })
-ls.add_snippets("lua",
+local LuaMS=require("lua")
+	LuaMS:loader()
+--[[ls.add_snippets("lua",
 {
 	s("lua",{
 		t("haste on"),i(0),t("the moon")
 	})
+	--require("snippets.luasnip")
 }
-)
+)]]
 
-require("luasnip.loaders.from_vscode").lazy_load({paths={"./snippets"}})
+
+--require("luasnip.loaders.from_vscode").lazy_load({paths={"./snippets"}})
 
 -------------------------------------------------------------------------------
 --Formatter settings
@@ -328,30 +327,18 @@ require("toggleterm").setup{
 
 
 --lightline setting
---[[vim.g.lightline={
-		colorscheme="powerline",
-		active={
-			left= { { 'mode', 'paste' },
-			{ 'gitbranch', 'readonly', 'filename', 'modified' } 	}
-		},
-		component_function={
-				gitbranch="FugitiveHead"
-		}
-}]]
-vim.cmd[[
+vim.cmd([[
 let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead'
-      \ },
-      \ }
-]]
-
-
+       \ 'colorscheme': 'wombat',
+       \ 'active': {
+       \   'left': [ [ 'mode', 'paste' ],
+       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+       \ },
+       \ 'component_function': {
+       \   'gitbranch': 'FugitiveHead'
+       \ }
+       \ }
+]])
 -------------------------------------------------------------------------------
 --Autosave(pocco81/auto-save)
 -------------------------------------------------------------------------------
@@ -359,9 +346,9 @@ require("auto-save").setup{
 	enabled=false,-- start NOT auto-save when the plugin is loaded (i.e. when your package manager loads it)
 
 	--vim.api.nvim_get_option_info2なんてのもあるらしい
-	--[[vim.api.nvim_create_autocmd('BufEnter',
+	--[[vim.api.nvim_create_autocmd({'BufEnter',"Filetype"},
 		{
-			pattern="*",
+			pattern="*.tex",
 			callback=function()
 			if vim.o.filetype == "tex" then
 				vim.cmd("ASToggle")
@@ -429,6 +416,7 @@ vim.g.python3_host_prog = python3_path
 -- g:loaded_python3_providerを設定する
 vim.g.loaded_python3_provider = 1
 
+
 -------------------------------------------------------------------------------
 --これからやっておくべきこと
 -------------------------------------------------------------------------------
@@ -451,7 +439,7 @@ vim.g.loaded_python3_provider = 1
 --ファイルタイプ別のプラグイン呼び出し設定
 --起動高速化
 --タブも何とかしてえ
---lspらへんの話の整理
+--✓lspらへんの話の整理(->割と整った感はある，Masonのおかげ)
 --不要行間表示
 --新しく開くファイルはタブで開く,だけどvスプリットさせたい
 --✓ターミナル分割　
