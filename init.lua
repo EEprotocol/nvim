@@ -10,7 +10,7 @@ vim.o.colorcolumn = "80"		  		-- 列線表示
 vim.o.directory="./"							-- swap file place
 vim.o.smartindent=true            -- mk indent according to the block
 vim.o.guifont="CaskaydiaMono Nerd Font Mono:h13"--Font
-vim.o.guifontwide=30
+vim.o.guifontwide="30"
 vim.o.hlsearch=true								--high light for search
 --local setting
 vim.opt.undofile=true
@@ -44,6 +44,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup(
 	{
+		{"nvim-tree/nvim-web-devicons"},
 		{"lervag/vimtex",ft={"tex"}},
 		{"akinsho/toggleterm.nvim",
 		version="*",
@@ -88,6 +89,19 @@ require("lazy").setup(
 		{"mhartington/formatter.nvim"},
 		{"vim-skk/skkeleton",event="InsertEnter"},
 		{"pocco81/auto-save.nvim"},
+		{"natecraddock/workspaces.nvim"},
+		{"dstein64/vim-startuptime"},
+		{
+    'goolord/alpha-nvim',
+    dependencies = {
+        'nvim-tree/nvim-web-devicons',
+        'nvim-lua/plenary.nvim'
+    },
+    config = function ()
+        require'alpha'.setup(require'alpha.themes.theta'.config)
+    end
+		},
+
 		{"romgrk/barbar.nvim",dependencies = {
       'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
       'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
@@ -101,8 +115,7 @@ require("lazy").setup(
     },
     version = '^1.0.0', -- optional: only update when a new 1.x version is released
 		},
-		{"natecraddock/workspaces.nvim"},
-		{"dstein64/vim-startuptime"}
+		{"Shatur/neovim-session-manager"},
 	}
 )
 
@@ -210,13 +223,19 @@ ls.add_snippets("all", {
 		),
 		t ' i(2)->', i(2), t '<-i(2) i(0)->', i(0)
 		}),
-		
 		s("HW", {
 			t("Hello,",i(1)," World!",i(1),i(0))
 		})
 })
+--global function for new line
+function Nl()
+	return t('', '')
+end
+
 local LuaMS=require("lua")
 	LuaMS:loader()
+local texMS=require("tex")
+	texMS:loader()
 --[[ls.add_snippets("lua",
 {
 	s("lua",{
@@ -391,8 +410,32 @@ require("auto-save").setup{
 vim.api.nvim_set_keymap("n", "<leader>as", ":ASToggle<CR>", {})
 
 vim.cmd("ASToggle")
+
+
+-------------------------------------------------------------------------------
+--Session
+-------------------------------------------------------------------------------
+local Path = require('plenary.path')
+local config = require('session_manager.config')
+require('session_manager').setup({
+  sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'), -- The directory where the session files will be saved.
+  session_filename_to_dir = session_filename_to_dir, -- Function that replaces symbols into separators and colons to transform filename into a session directory.
+  dir_to_session_filename = dir_to_session_filename, -- Function that replaces separators and colons into special symbols to transform session directory into a filename. Should use `vim.loop.cwd()` if the passed `dir` is `nil`.
+  autoload_mode = config.AutoloadMode.LastSession, -- Define what to do when Neovim is started without arguments. Possible values: Disabled, CurrentDir, LastSession
+  autosave_last_session = true, -- Automatically save last session on exit and on session switch.
+  autosave_ignore_not_normal = true, -- Plugin will not save a session when no buffers are opened, or all of them aren't writable or listed.
+  autosave_ignore_dirs = {}, -- A list of directories where the session will not be autosaved.
+  autosave_ignore_filetypes = { -- All buffers of these file types will be closed before the session is saved.
+    'gitcommit',
+    'gitrebase',
+  },
+  autosave_ignore_buftypes = {}, -- All buffers of these bufer types will be closed before the session is saved.
+  autosave_only_in_session = false, -- Always autosaves session. If true, only autosaves after a session is active.
+  max_path_length = 80,  -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
+})
 -------------------------------------------------------------------------------
 -- プラグインのキーマッピング (例: telescope)
+-------------------------------------------------------------------------------
 vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', { 
 	noremap = true, silent = true 
 })

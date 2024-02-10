@@ -1,3 +1,4 @@
+
 local LuaMS={}
 function LuaMS.loader()
 local ls = require("luasnip")
@@ -36,50 +37,27 @@ local function fn(
    return args[1][1]
 end
 
-ls.add_snippets("lua",
+function Nl()
+	return 	t({'', ''})
+end
+
+ls.add_snippets("tex",
 {
-	s("lua",{
-		t("haste on "),i(1,"an var"),t(" the venus"),i(0)
+	s("pre-platex",{
+		t("haste on"),i(0),t("the venus")
 	}),
 
-	s("multi",{
+	s("pre-lualatex",{
 		t({"anti","parabolalism"})
 	}),
 
-	s("trig", {
-	i(1), t '<-i(1) ',
-	f(fn,   --callback (args, parent, user_args) -> string
-		{2}  --node indice(s) whose text is passed to fn, i.e. i(2
-		  --opts
-	),
-	t ' i(2)->', i(2), t '<-i(2) i(0)->', i(0)
-	}),
-
-	s("begin", {
-	t 'begin(',i(1),t')',
+	s({trig="begin", name="environment", dscr="basic environment"}, {
+	t '\\begin{',i(1,'environment'),t'}',Nl(),
 	t({'', ''}),
 	t({'  '}),i(0),
 	t({'', ''}),
-	t'end(',f(fn,{1}),t')',
+	t'\\end{',f(fn,{1}),t'}',
 	}),
-
-	s('lam', {
-		t({'function('}), i(1), t({')'}),
-			t({'', ''}),
-			t({'  '}), i(0),
-			t({'', ''}),
-			t({'end'})
-  }),
-
-	s("trigger", {
-		i(1, "First jump"),
-		t(" :: "),
-		sn(2, {
-			i(1, "Second jump"),
-			t(" : "),
-			i(2, "Third jump")
-		})
-	})
 }
 )
 end
