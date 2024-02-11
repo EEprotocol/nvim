@@ -25,11 +25,14 @@ local option={
 vim.api.nvim_set_keymap('n', '<Space>', ':nohlsearch<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = true })
 --colorscheme
+--
 -------------------------------------------------------------------------------
 --Luaのお勉強
 -------------------------------------------------------------------------------
+
 -------------------------------------------------------------------------------
---lazy...!(plugin)
+--plugin management (lazy.nvim)
+-------------------------------------------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -115,11 +118,10 @@ require("lazy").setup(
     },
     version = '^1.0.0', -- optional: only update when a new 1.x version is released
 		},
-		{"Shatur/neovim-session-manager"},
+		{"Shatur/neovim-session-manager"}
 	}
 )
 
---haste on spriclar the moon
 -------------------------------------------------------------------------------
 --LSP setting
 -------------------------------------------------------------------------------
@@ -133,11 +135,6 @@ require("mason-lspconfig").setup{
 	ensure_installed={"lua_ls","texlab","pyright","arduino_language_server"}
 }
 -- launch-test.lua
---[[vim.lsp.start({
-  name = "lua_ls", -- 管理上の名前
-  cmd = { "lua-language-server" }, -- Language server を起動するためのコマンド
-  root_dir = vim.fs.dirname(vim.fs.find({ ".luarc.json" }, { upward = true })[1]), -- プロジェクトのルートディレクトリを検索する
-})]]
 require"lspconfig".lua_ls.setup{}
 require"lspconfig".pyright.setup{}
 require"lspconfig".texlab.setup{}
@@ -175,6 +172,7 @@ cmp.setup({
     { name = "buffer" },
   })
 })
+
 -------------------------------------------------------------------------------
 --snippet settings
 -------------------------------------------------------------------------------
@@ -304,6 +302,138 @@ require("formatter").setup {
 
 
 -------------------------------------------------------------------------------
+--Start Setting (goolord/alpha-nvim)
+-------------------------------------------------------------------------------
+local math=require("math")
+local status_ok, alpha = pcall(require, "alpha")
+if not status_ok then
+ return
+end
+
+local dashboard = require("alpha.themes.dashboard")
+local pikachu={
+
+    [[          ▀████▀▄▄              ▄█ ]],
+    [[            █▀    ▀▀▄▄▄▄▄    ▄▄▀▀█ ]],
+    [[    ▄        █          ▀▀▀▀▄  ▄▀  ]],
+    [[   ▄▀ ▀▄      ▀▄              ▀▄▀  ]],
+    [[  ▄▀    █     █▀   ▄█▀▄      ▄█    ]],
+    [[  ▀▄     ▀▄  █     ▀██▀     ██▄█   ]],
+    [[   ▀▄    ▄▀ █   ▄██▄   ▄  ▄  ▀▀ █  ]],
+    [[    █  ▄▀  █    ▀██▀    ▀▀ ▀▀  ▄▀  ]],
+    [[   █   █  █      ▄▄           ▄▀   ]],
+
+}
+
+--dashboard.header_color ="AlphaCol".. math.random(11)
+dashboard.header_color ="#593822"
+local another={
+
+    [[          ▂▟▙▂   ]],
+    [[       ▂▄▆██▛ ▚▂▁]],
+    [[       ▛▀▀　　▝▜█▆▃]],
+    [[　　　▞]],
+    [[]],
+    [[]],
+    [[]],
+    [[]],
+    [[]],
+    [[]],
+
+}
+
+local prop={
+[[　　　　←       ]],
+[[　　　　∧_∧			]],
+[[　　 ∧_∧･ω･`)　↑]],
+[[↓　( ･ω･`)･ω･`) ]],
+[[　 く|　⊂)ω･`)  ]],
+[[　　 (⌒　ヽ･`)  ]],
+[[　　 ∪￣＼⊃     ]],
+}
+local jigen={
+[[                                            (X                       ]],
+[[                                      (J13JZ1vG                      ]],
+[[					                   ((-+<~(1.JwS3JXWfcX3                    ]],
+[[					              (.zHwZ(H6JXuOXdZuWZdfUVoJ__                  ]],
+[[					              (HZA4WYJGXYjGH6dXHSJ=_J3~jz-_                ]],
+[[					               (S<W>SddtdGd1Ywv!.~~(l(v(C(7OJ-~            ]],
+[[				                 _(fTTT?!7?<?<~.~~~.__(-v1J<(v(JT&._         ]],
+[[					               (J<_._~........-.~_..-1(3(v-JCJ<++?ZJ+_     ]],
+[[					             _J43~....~~.......~._(?!_GZ>JIz1vuwJ<J1vZI+(-_]],
+[[					           (v1J!T+~~~...~....~_(J=.(vv7<?~1v(JC<J1vzwI_-^  ]],
+[[					       (JCv~J^_-=(9._~~_~.~_(J=-_-JO>-J!-v<J!(JCzO71x7!    ]],
+[[					   (-?v-J!(C_-=(v~(v?G-(c~(=(Jv_JwC_(>(ciJ^.JCzV1-7~       ]],
+[[					(u,.(>(C(J~(=(v~(v_-=-J1/<(Ov_JwO<(C(z<J^(v=.(J>_          ]],
+[[					   7Tu.(=(C(Z^.v~J=(J&C_-Ov~JXXv(C(J1J=_J3.(dwk_           ]],
+[[					       ?T5J<(J:J3(vu=-JOZ!(KUCjv~J=(f!--zI(kw1d2           ]],
+[[					            TnJ-7~Y<J3dz>(WVjv!_d! .J7jZ!..(kWXXo          ]],
+[[					            ~kSvz4qS-(J:(X<JC..(J7>>(DV~.`..0HSwIn,        ]],
+[[					            (KS2(f777T<<~_-(?6(u&(+--k:....(UX0zSv-1,      ]],
+[[					           (WXkHWS_▒▒▒▒_77▒▒▒▒▒▒▒.`.WV_...-uXVUTuww+?_     ]],
+[[					          (1WHHHR_1▒▒▒▒J_▒▒▒▒▒▒▒▒▒▒,S>-(JZJWVGJZCvT<-      ]],
+[[					         (5udMW9dKj░░░(-░░░░░░░░░░░dS-JwwXYjV+wwUVXZ$_     ]],
+[[					          _&X8dq9dK    (~         JW0Oz VwZuwXX=iwi-       ]],
+[[					    ._     _4vTWHW%           _  (GWXX VXXZXXXJwZwwS~      ]],
+[[					     (n.(,   4(HWf~  __.___---  ($wXX s3ZTXV1X0o?~         ]],
+[[					      (4C(Ya&(Z9d!    +-       -v(vGd +zjY=?=~             ]],
+[[					      (<JA0G?+uX3--.-_(G_     k((Z(3.                      ]],
+[[					       ?5RJjkk0wkZvvXHXd<((((JCJ>J!                        ]],
+[[					        ((kX0WWWGwGXHXkXkZ0ZZJJ$J                          ]],
+[[					            ?TAXYOHkWWkXWXX0ZjY=                           ]],
+[[					              ?<<<IJSUJ6whZ"=                              ]],
+[[					                                                           ]],
+[[					            NeoVim-Qt v.0.9.4 started                      ]],
+}
+
+local jigen2={
+[[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⢋⠏⡁⡻⣿            ]],
+[[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠟⢻⠏⡿⠻⠂⡃⢑⠌⠀⠀⢐⡼⣿          ]],
+[[⣿⣿⣿⣿⣿⣿⣿⣿⣿⡍⡂⠔⡡⡊⢐⢕⡀⠐⠁⢠⣲⣽⢢⡶⡙⣿         ]],
+[[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣎⣒⣉⣠⣪⣢⣌⣤⣶⣿⣿⣿⡼⢌⣜⡵⢣⠭⣛⢿     ]],
+[[⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣳⣋⢚⠕⠫⡪⡪⡪⡮⡍⡻⠿ ]],
+[[⣿⣿⣿⣿⣿⣿⠿⣫⢕⣵⢝⢿⣿⣿⣿⣿⣿⣿⡿⣛⣵⡞⢍⡥⢿⡆⡰⢚⡠⡊⠈⠨⡨⢞⣵]],
+[[⣿⣿⢿⡛⣩⢦⣿⣵⢟⡵⣫⢖⣝⠻⠟⡻⣟⠽⢊⡽⠋⣰⢟⡴⡫⢊⡴⢫⢂⡠⣚⣽   ]],
+[[⣿⣽⢻⠞⡽⣫⢞⡵⣫⢞⡵⣋⡶⠫⣪⢞⢕⡵⠋⢀⢖⡵⡫⢊⡴⢫⡾⠛⢵⣿     ]],
+[[⣿⣿⣿⣿⣶⣥⣟⡾⣡⢋⢜⠕⡴⢟⠑⣵⠋⢄⢔⣵⢫⣞⡠⢟⣇⣧⡁⠐⠁⢿     ]],
+[[⣿⣿⣿⣿⣿⣿⣿⣿⠑⢌⣽⢛⡴⠗⣵⣃⡔⣱⡿⣗⣫⡽⡌⢡⣾⣿⣿⠄⠀⡨⡻    ]],
+[[⣿⣿⣿⣿⣿⣿⣿⣟⠔⠐⠃⣾⣶⣾⣷⣿⣿⣷⣯⣬⣭⣬⠁⣺⣿⣿⠳⠀⠈⡨⠊⢪⣻  ]],
+[[⣿⣿⣿⣿⣿⣿⢟⡂⠀⠀⠼⠞⣿⣿⣳⣿⣿⣿⣿⣿⣿⡟⢀⡛⢋⠕⢀⢄⠄⠄⠴⠛⢿  ]],
+[[⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠔⢱⣿⣿⣾⣿⣿⣿⣿⣿⣿⠁⡠⠀⠀⠀⠅⠁⢀⠔⢁⢿   ]],
+[[⣿⣿⣿⣟⢿⡿⣿⣷⡱⡀⠀⣾⣿⣿⣿⣿⡿⢟⣽⣿⠣⠀⠀⠀⠀⡀⢀⠄⠁⣄⣥⣼   ]],
+[[⣿⣿⣿⡿⢮⡘⠔⡹⡃⠀⢸⣿⣿⣯⢽⣿⣿⣿⣿⣯⡎⣆⣥⣭⣬⣴⣷⣶⣿      ]],
+[[⣿⣿⣿⣿⣮⣄⡊⠊⠀⠄⠄⠚⠍⠡⠡⠟⢛⡛⢯⢋⢮⣾             ]],
+[[⣿⣿⣿⣿⣿⣿⣦⣴⡒⠄⡁⠀⠀⠀⠀⠀⠀⠈⢀⣶               ]],
+[[⣿⣿⣿⣿⣿⣿⣿⣿⣷⣾⣶⣿⣤⣾⣤⣬⣷⣾                 ]],
+}
+--used img2art in python
+dashboard.section.header.val = jigen2
+
+ dashboard.section.buttons.val = {
+   dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
+   dashboard.button("b", "󰑙  Back to the Session", ":SessionManager load_last_session<CR>:set autochdir"),
+   dashboard.button("r", "  Recently used files", ":Telescope oldfiles <CR>"),
+   dashboard.button("f", "󰱼  Find file", ":Telescope find_files <CR>"),
+   dashboard.button("t", "󱎸  Find text", ":Telescope live_grep <CR>"),
+   dashboard.button("c", "  Configuration", ":e ~/.config/nvim/init.lua<CR><Shift>U<CR>"),
+   dashboard.button("u", "󰮭  Lazy", ":Lazy<CR><Shift-u>"),
+   dashboard.button("q", "󰩈  Quit Neovim", ":qa<CR>"),
+}
+
+local function footer()
+ return "New era is coming...!"
+end
+
+dashboard.section.footer.val = footer()
+
+dashboard.section.footer.opts.hl = "AlphaFooter"
+dashboard.section.header.opts.hl = "AlphaHeader"
+dashboard.section.buttons.opts.hl = "AlphaButtons"
+
+dashboard.opts.opts.noautocmd = true
+alpha.setup(dashboard.opts)
+
+-------------------------------------------------------------------------------
 --Color Scheme
 -------------------------------------------------------------------------------
 --tokyonight setting
@@ -312,7 +442,8 @@ require("tokyonight").setup(
 	style="moon",
 	transparent=false,
 	styles={
-		sidebars="transparent"
+		sidebars="transparent",
+		floats="transparent"
 		},
 	sidebars={"qf","help"},
 	lualine_bold=true,
@@ -358,6 +489,7 @@ let g:lightline = {
        \ }
        \ }
 ]])
+
 -------------------------------------------------------------------------------
 --Autosave(pocco81/auto-save)
 -------------------------------------------------------------------------------
@@ -413,7 +545,7 @@ vim.cmd("ASToggle")
 
 
 -------------------------------------------------------------------------------
---Session
+--Session (Shatur/session_manager)
 -------------------------------------------------------------------------------
 local Path = require('plenary.path')
 local config = require('session_manager.config')
@@ -459,7 +591,6 @@ vim.g.python3_host_prog = python3_path
 -- g:loaded_python3_providerを設定する
 vim.g.loaded_python3_provider = 1
 
-
 -------------------------------------------------------------------------------
 --これからやっておくべきこと
 -------------------------------------------------------------------------------
@@ -474,7 +605,7 @@ vim.g.loaded_python3_provider = 1
 --フォントサイズ調整in qt
 --lightline改善，ファイル読み込みとかワークスペースとか
 --gitも何とかしよう
---変数が使われてるかどうかの表示
+--✓変数が使われてるかどうかの表示(->どうやらLSPで自動的に行われているよう)
 --@windows ターミナル：powershellへ
 --オープニング画面とかつけたい，VScode的な,nvchad的な
 --✓自動保存に役立つ何か
@@ -483,8 +614,12 @@ vim.g.loaded_python3_provider = 1
 --起動高速化
 --タブも何とかしてえ
 --✓lspらへんの話の整理(->割と整った感はある，Masonのおかげ)
---不要行間表示
+--✓不要行間表示(->あんまいらんな．変なスペースがある行はLSPで表示されるようです)
 --新しく開くファイルはタブで開く,だけどvスプリットさせたい
 --✓ターミナル分割　
 --インデントラインを引く
 --リロードコマンドを組む
+--toggleterm常時更新
+--変数一覧表示python
+--✓rename command(->:saveas)
+--toggleterm devicons表示
