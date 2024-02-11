@@ -9,8 +9,9 @@ vim.o.cursorline = true						-- 行線表示
 vim.o.colorcolumn = "80"		  		-- 列線表示
 vim.o.directory="./"							-- swap file place
 vim.o.smartindent=true            -- mk indent according to the block
-vim.o.guifont="Caskaydiamono Nerd Font Mono:h13"--Font
 --vim.o.guifont="default:h20"
+vim.o.guifont="CaskaydiaMono Nerd Font Mono:h13"--Font
+vim.o.guifontwide=30
 vim.o.hlsearch=true								--high light for search
 --local setting
 vim.opt.undofile=true
@@ -24,7 +25,9 @@ local option={
 vim.api.nvim_set_keymap('n', '<Space>', ':nohlsearch<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = true })
 --colorscheme
-vim.cmd('colorscheme desert')
+-------------------------------------------------------------------------------
+--Luaのお勉強
+-------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 --lazy...!(plugin)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -79,6 +82,20 @@ require("lazy").setup(
 		{ "saadparwaiz1/cmp_luasnip" },
 		{"mhartington/formatter.nvim"},
 		{"vim-skk/skkeleton"},
+		{"pocco81/auto-save.nvim",},
+		{"romgrk/barbar.nvim",dependencies = {
+      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+    },
+    init = function() vim.g.barbar_auto_setup = false end,
+    opts = {
+      -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
+      animation = true,
+      -- insert_at_start = true,
+      -- …etc.
+    },
+    version = '^1.0.0', -- optional: only update when a new 1.x version is released
+		},
 
 
 		{"natecraddock/workspaces.nvim"}
@@ -94,7 +111,6 @@ local function filetype()
 		return "other"
 	end
 end
-print(filetype)
 -------------------------------------------------------------------------------
 --LSP setting
 -------------------------------------------------------------------------------
@@ -337,8 +353,61 @@ let g:lightline = {
       \ },
       \ }
 ]]
--------------------------------------------------------------------------------
 
+
+-------------------------------------------------------------------------------
+--Autosave(pocco81/auto-save)
+-------------------------------------------------------------------------------
+require("auto-save").setup{
+	enabled=false,-- start NOT auto-save when the plugin is loaded (i.e. when your package manager loads it)
+
+	--vim.api.nvim_get_option_info2なんてのもあるらしい
+	--[[vim.api.nvim_create_autocmd('BufEnter',
+		{
+			pattern="*",
+			callback=function()
+			if vim.o.filetype == "tex" then
+				vim.cmd("ASToggle")
+			end
+		end
+		}),]]
+
+    execution_message = {
+		message = function() -- message to print on save
+			return ("AutoSave: saved at " .. vim.fn.strftime("%H:%M:%S"))
+		end,
+		dim = 0.18, -- dim the color of `message`
+		cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
+	},
+    trigger_events = {"InsertLeave", "TextChanged"}, -- vim events that trigger auto-save. See :h events
+	-- function that determines whether to save the current buffer or not
+	-- return true: if buffer is ok to be saved
+	-- return false: if it's not ok to be saved
+	condition = function(buf)
+		local fn = vim.fn
+		local utils = require("auto-save.utils.data")
+
+		if
+			fn.getbufvar(buf, "&modifiable") == 1 and
+			utils.not_in(fn.getbufvar(buf, "&filetype"), {}) then
+			return true -- met condition(s), can save
+		end
+		return false -- can't save
+	end,
+    write_all_buffers = false, -- write all buffers when the current one meets `condition`
+    debounce_delay = 135, -- saves the file at most every `debounce_delay` milliseconds
+	callbacks = { -- functions to be executed at different intervals
+		enabling = nil, -- ran when enabling auto-save
+		disabling = nil, -- ran when disabling auto-save
+		before_asserting_save = nil, -- ran before checking `condition`
+		before_saving = nil, -- ran before doing the actual save
+		after_saving = nil -- ran after doing the actual save
+	}
+}
+vim.api.nvim_set_keymap("n", "<leader>as", ":ASToggle<CR>", {})
+
+vim.cmd("ASToggle")
+-------------------------------------------------------------------------------
 -- プラグインのキーマッピング (例: telescope)
 vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', { 
 	noremap = true, silent = true 
@@ -354,6 +423,7 @@ vim.api.nvim_set_keymap('n', '<Leader>tt', '<cmd>ToggleTerm direction=horizontal
 
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', {noremap = true})--terminal normalmode
 vim.api.nvim_set_keymap('t', '<c-[>', '<C-\\><C-n>', {noremap = true})--terminal normalmode
+--ターミナル分割は2<C-\>でできます！
 
 -- python3のパスを取得する
 local python3_path = vim.fn.trim(vim.fn.system('which python3'))
@@ -364,9 +434,10 @@ vim.g.loaded_python3_provider = 1
 
 -------------------------------------------------------------------------------
 --これからやっておくべきこと
---スニペット構成
+-------------------------------------------------------------------------------
+--スニペット構成(とくにTeXのbegin-endらへんの話)
 --GITブランチの表示
---自動補完機能
+--✓自動補完機能(->snippetは接続だけしました)
 --変更箇所表示(gitみたいな縦線)
 --コマンド設定
 --texの構成
@@ -378,7 +449,7 @@ vim.g.loaded_python3_provider = 1
 --変数が使われてるかどうかの表示
 --@windows ターミナル：powershellへ
 --オープニング画面とかつけたい，VScode的な,nvchad的な
---自動保存に役立つ何か
+--✓自動保存に役立つ何か
 --コピペはクリップボードに一元化したい
 --ファイルタイプ別のプラグイン呼び出し設定
 --起動高速化
@@ -388,3 +459,4 @@ vim.g.loaded_python3_provider = 1
 --新しく開くファイルはタブで開く,だけどvスプリットさせたい
 --✓ターミナル分割　
 --インデントラインを引く
+--リロードコマンドを組む
