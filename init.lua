@@ -68,10 +68,6 @@ require("lazy").setup(
 		},
 		{"preservim/nerdcommenter"},
 		{"lambdalisue/fern.vim"},
-		{'stevearc/oil.nvim',
-			opts = {},-- Optional dependencies
-			dependencies = { "nvim-tree/nvim-web-devicons" }
-		},
 		{"lambdalisue/glyph-palette.vim"},
 		{"nvim-lua/plenary.nvim"},
 		{"nvim-telescope/telescope.nvim", tag='0.1.5'},
@@ -426,7 +422,7 @@ dashboard.section.header.val = jigen2
 
  dashboard.section.buttons.val = {
    dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
-   dashboard.button("b", "󰑙  Back to the Session", ":SessionManager load_last_session<CR>:set autochdir"),
+   dashboard.button("b", "󰑙  Back to the Session", ":SessionManager load_last_session<CR>:set autochdir<CR>"),
    dashboard.button("r", "  Recently used files", ":Telescope oldfiles <CR>"),
    dashboard.button("f", "󰱼  Find file", ":Telescope find_files <CR>"),
    dashboard.button("t", "󱎸  Find text", ":Telescope live_grep <CR>"),
@@ -457,7 +453,6 @@ vim.g.loaded_netrwPlugin = 1
 
 -- optionally enable 24-bit colour
 vim.opt.termguicolors = true
-
 -- empty setup using defaults
 require("nvim-tree").setup()
 
