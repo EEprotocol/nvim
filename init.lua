@@ -11,7 +11,7 @@ vim.o.directory="./"							-- swap file place
 vim.o.smartindent=true            -- mk indent according to the block
 --vim.o.guifont="default:h20"
 vim.o.guifont="CaskaydiaMono Nerd Font Mono:h13"--Font
-vim.o.guifontwide=30
+vim.o.guifontwide="30"
 vim.o.hlsearch=true								--high light for search
 --local setting
 vim.opt.undofile=true
@@ -21,6 +21,7 @@ local option={
 	undofile=true,
 	undodir="~/.config/nvim"
 }
+
 -- キーマッピング
 vim.api.nvim_set_keymap('n', '<Space>', ':nohlsearch<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = true })
@@ -44,6 +45,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup(
 	{
+		{"nvim-tree/nvim-web-devicons"},
 		{"lervag/vimtex",ft={"tex"}},
 		{"akinsho/toggleterm.nvim",
 		version="*",
@@ -51,7 +53,8 @@ require("lazy").setup(
 		},
 		{"itchyny/lightline.vim"},
 		{"folke/tokyonight.nvim",
-		lazy=false,
+		lazy=true,
+		cmd="ToggleTerm",
 		priority=1000,
 		opts={}
 		},
@@ -71,23 +74,40 @@ require("lazy").setup(
 		{"BurntSushi/ripgrep"},
 		{"nvim-treesitter/nvim-treesitter"},
     {"neovim/nvim-lspconfig"},--lsp
-    {"williamboman/mason.nvim"},
-    {"williamboman/mason-lspconfig.nvim"},
+    {"williamboman/mason.nvim",lazy=true, },
+    {"williamboman/mason-lspconfig.nvim",lazy=true,},
 		--compilation:ddcを使おうとしていたが挫折
-		{ "L3MON4D3/LuaSnip",tag="v2.*",dependencies="saadparwaiz1/cmp_luasnip","rafamadriz/friendly-snippets"},
+		{ "L3MON4D3/LuaSnip",
+		version="v2.*",
+		build="make install_jsregexp",
+		dependencies="saadparwaiz1/cmp_luasnip",
+		event="InsertEnter"
+		},
 		{ "hrsh7th/nvim-cmp",event="InsertEnter" },
 		{ "hrsh7th/cmp-nvim-lsp",event="InsertEnter"},
 		{"hrsh7th/vim-vsnip",event="InsertEnter"},
-		{ "hrsh7th/cmp-buffer" },
-		{ "saadparwaiz1/cmp_luasnip" },
+		{ "hrsh7th/cmp-buffer",event="InsertEnter"},
 		{"mhartington/formatter.nvim"},
-		{"vim-skk/skkeleton"},
-		{"pocco81/auto-save.nvim",},
+		{"vim-skk/skkeleton",event="InsertEnter"},
+		{"pocco81/auto-save.nvim"},
+		{"natecraddock/workspaces.nvim"},
+		{"dstein64/vim-startuptime"},
+		{
+    'goolord/alpha-nvim',
+    dependencies = {
+        'nvim-tree/nvim-web-devicons',
+        'nvim-lua/plenary.nvim'
+    },
+    config = function ()
+        require'alpha'.setup(require'alpha.themes.theta'.config)
+    end
+		},
+
 		{"romgrk/barbar.nvim",dependencies = {
       'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
       'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
     },
-    init = function() vim.g.barbar_auto_setup = false end,
+    init = function() vim.g.barbar_auto_setup = true end,
     opts = {
       -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
       animation = true,
@@ -96,9 +116,7 @@ require("lazy").setup(
     },
     version = '^1.0.0', -- optional: only update when a new 1.x version is released
 		},
-
-
-		{"natecraddock/workspaces.nvim"}
+		{"Shatur/neovim-session-manager"},
 	}
 )
 -------------------------------------------------------------------------------
@@ -111,6 +129,8 @@ local function filetype()
 		return "other"
 	end
 end
+
+--haste on spriclar the moon
 -------------------------------------------------------------------------------
 --LSP setting
 -------------------------------------------------------------------------------
@@ -132,6 +152,7 @@ require("mason-lspconfig").setup{
 require"lspconfig".lua_ls.setup{}
 require"lspconfig".pyright.setup{}
 require"lspconfig".texlab.setup{}
+require"lspconfig".arduino_language_server.setup{}
 -- lspの設定後に追加
 vim.opt.completeopt = "menu,menuone,noselect"
 local cmp = require("cmp")
@@ -168,6 +189,7 @@ cmp.setup({
 -------------------------------------------------------------------------------
 --snippet settings
 -------------------------------------------------------------------------------
+--
 local ls = require("luasnip")
 local s = ls.snippet
 local sn = ls.snippet_node
@@ -212,26 +234,30 @@ ls.add_snippets("all", {
 		),
 		t ' i(2)->', i(2), t '<-i(2) i(0)->', i(0)
 		}),
-
 		s("HW", {
-			t("Hello, World!")
+			t("Hello,",i(1)," World!",i(1),i(0))
 		})
-  --[[lua = {
-    s({
-      t = 'std',
-      }, {
-      t({'#include <bits/stdc++.h>', 'using namespace std;', ''}),
-      i(0),
-    }),
-  },]]
 })
-ls.add_snippets("lua",
+--global function for new line
+function Nl()
+	return t('', '')
+end
+
+local LuaMS=require("lua")
+	LuaMS:loader()
+local texMS=require("tex")
+	texMS:loader()
+--[[ls.add_snippets("lua",
 {
 	s("lua",{
 		t("haste on"),i(0),t("the moon")
 	})
+	--require("snippets.luasnip")
 }
-)
+)]]
+
+
+--require("luasnip.loaders.from_vscode").lazy_load({paths={"./snippets"}})
 
 -------------------------------------------------------------------------------
 --Formatter settings
@@ -331,30 +357,18 @@ require("toggleterm").setup{
 
 
 --lightline setting
---[[vim.g.lightline={
-		colorscheme="powerline",
-		active={
-			left= { { 'mode', 'paste' },
-			{ 'gitbranch', 'readonly', 'filename', 'modified' } 	}
-		},
-		component_function={
-				gitbranch="FugitiveHead"
-		}
-}]]
-vim.cmd[[
+vim.cmd([[
 let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead'
-      \ },
-      \ }
-]]
-
-
+       \ 'colorscheme': 'wombat',
+       \ 'active': {
+       \   'left': [ [ 'mode', 'paste' ],
+       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+       \ },
+       \ 'component_function': {
+       \   'gitbranch': 'FugitiveHead'
+       \ }
+       \ }
+]])
 -------------------------------------------------------------------------------
 --Autosave(pocco81/auto-save)
 -------------------------------------------------------------------------------
@@ -362,9 +376,9 @@ require("auto-save").setup{
 	enabled=false,-- start NOT auto-save when the plugin is loaded (i.e. when your package manager loads it)
 
 	--vim.api.nvim_get_option_info2なんてのもあるらしい
-	--[[vim.api.nvim_create_autocmd('BufEnter',
+	--[[vim.api.nvim_create_autocmd({'BufEnter',"Filetype"},
 		{
-			pattern="*",
+			pattern="*.tex",
 			callback=function()
 			if vim.o.filetype == "tex" then
 				vim.cmd("ASToggle")
@@ -374,7 +388,7 @@ require("auto-save").setup{
 
     execution_message = {
 		message = function() -- message to print on save
-			return ("AutoSave: saved at " .. vim.fn.strftime("%H:%M:%S"))
+			return ("AutoSave: saved at " .. vim.fn.strftime("%Y/%b/%d %H:%M:%S"))
 		end,
 		dim = 0.18, -- dim the color of `message`
 		cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
@@ -407,8 +421,32 @@ require("auto-save").setup{
 vim.api.nvim_set_keymap("n", "<leader>as", ":ASToggle<CR>", {})
 
 vim.cmd("ASToggle")
+
+
+-------------------------------------------------------------------------------
+--Session
+-------------------------------------------------------------------------------
+local Path = require('plenary.path')
+local config = require('session_manager.config')
+require('session_manager').setup({
+  sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'), -- The directory where the session files will be saved.
+  session_filename_to_dir = session_filename_to_dir, -- Function that replaces symbols into separators and colons to transform filename into a session directory.
+  dir_to_session_filename = dir_to_session_filename, -- Function that replaces separators and colons into special symbols to transform session directory into a filename. Should use `vim.loop.cwd()` if the passed `dir` is `nil`.
+  autoload_mode = config.AutoloadMode.LastSession, -- Define what to do when Neovim is started without arguments. Possible values: Disabled, CurrentDir, LastSession
+  autosave_last_session = true, -- Automatically save last session on exit and on session switch.
+  autosave_ignore_not_normal = true, -- Plugin will not save a session when no buffers are opened, or all of them aren't writable or listed.
+  autosave_ignore_dirs = {}, -- A list of directories where the session will not be autosaved.
+  autosave_ignore_filetypes = { -- All buffers of these file types will be closed before the session is saved.
+    'gitcommit',
+    'gitrebase',
+  },
+  autosave_ignore_buftypes = {}, -- All buffers of these bufer types will be closed before the session is saved.
+  autosave_only_in_session = false, -- Always autosaves session. If true, only autosaves after a session is active.
+  max_path_length = 80,  -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
+})
 -------------------------------------------------------------------------------
 -- プラグインのキーマッピング (例: telescope)
+-------------------------------------------------------------------------------
 vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', { 
 	noremap = true, silent = true 
 })
@@ -432,6 +470,7 @@ vim.g.python3_host_prog = python3_path
 -- g:loaded_python3_providerを設定する
 vim.g.loaded_python3_provider = 1
 
+
 -------------------------------------------------------------------------------
 --これからやっておくべきこと
 -------------------------------------------------------------------------------
@@ -454,7 +493,7 @@ vim.g.loaded_python3_provider = 1
 --ファイルタイプ別のプラグイン呼び出し設定
 --起動高速化
 --タブも何とかしてえ
---lspらへんの話の整理
+--✓lspらへんの話の整理(->割と整った感はある，Masonのおかげ)
 --不要行間表示
 --新しく開くファイルはタブで開く,だけどvスプリットさせたい
 --✓ターミナル分割　
