@@ -29,7 +29,7 @@ vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = t
 -------------------------------------------------------------------------------
 --Luaのお勉強
 -------------------------------------------------------------------------------
-
+--
 -------------------------------------------------------------------------------
 --plugin management (lazy.nvim)
 -------------------------------------------------------------------------------
@@ -47,6 +47,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup(
 	{
+		{"nvim-tree/nvim-tree.lua"},
 		{"nvim-tree/nvim-web-devicons"},
 		{"lervag/vimtex",ft={"tex"}},
 		{"akinsho/toggleterm.nvim",
@@ -60,15 +61,17 @@ require("lazy").setup(
 		priority=1000,
 		opts={}
 		},
---		{'nvim-lualine/lualine.nvim',
---    dependencies = { 'nvim-tree/nvim-web-devicons' }
---    --	},
 		{"windwp/nvim-autopairs",
 		event="InsertEnter",
 		opts={}--this is equalent to setup ({}) fundtion
 		},
 		{"preservim/nerdcommenter"},
 		{"lambdalisue/fern.vim"},
+		{'stevearc/oil.nvim',
+			opts = {},-- Optional dependencies
+			dependencies = { "nvim-tree/nvim-web-devicons" }
+		},
+		{"lambdalisue/glyph-palette.vim"},
 		{"nvim-lua/plenary.nvim"},
 		{"nvim-telescope/telescope.nvim", tag='0.1.5'},
 		{"nvim-telescope/telescope-file-browser.nvim"},
@@ -96,6 +99,7 @@ require("lazy").setup(
 		{"dstein64/vim-startuptime"},
 		{
     'goolord/alpha-nvim',
+		event="VimEnter",
     dependencies = {
         'nvim-tree/nvim-web-devicons',
         'nvim-lua/plenary.nvim'
@@ -434,6 +438,35 @@ dashboard.opts.opts.noautocmd = true
 alpha.setup(dashboard.opts)
 
 -------------------------------------------------------------------------------
+--Filer setup (nvim-tree)
+-------------------------------------------------------------------------------
+-- disable netrw at the very start of your init.lua
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- optionally enable 24-bit colour
+vim.opt.termguicolors = true
+
+-- empty setup using defaults
+require("nvim-tree").setup()
+
+-- OR setup with some options
+require("nvim-tree").setup({
+  sort = {
+    sorter = "case_sensitive",
+  },
+  view = {
+    width = 30,
+  },
+  renderer = {
+    group_empty = true,
+  },
+  filters = {
+    dotfiles = true,
+  },
+})
+
+-------------------------------------------------------------------------------
 --Color Scheme
 -------------------------------------------------------------------------------
 --tokyonight setting
@@ -572,7 +605,7 @@ vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', {
 	noremap = true, silent = true 
 })
 
-vim.api.nvim_set_keymap('n', '<Leader>;;', '<cmd>Fern . -drawer -width=25<CR><cmd>set nonumber<CR><cmd>set norelativenumber<CR>', { 
+vim.api.nvim_set_keymap('n', '<Leader>;;', '<cmd>NvimTreeOpen<CR><cmd>set nonumber<CR><cmd>set norelativenumber<CR>', { 
 	noremap = true, silent = true 
 })
 
