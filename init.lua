@@ -15,6 +15,7 @@ vim.o.guifontwide="30"
 vim.o.hlsearch=true								--high light for search
 --local setting
 vim.opt.undofile=true
+vim.opt.autochdir=true            --change the work directory automatically
 local option={
 	encoding="utf-8",
 	fileencoding="utf-8",
@@ -611,7 +612,7 @@ vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', {
 	noremap = true, silent = true 
 })
 
-vim.api.nvim_set_keymap('n', '<Leader>;;', '<cmd>NvimTreeOpen<CR><cmd>set nonumber<CR><cmd>set norelativenumber<CR>', { 
+vim.api.nvim_set_keymap('n', '<Leader>;;', '<cmd>NvimTreeOpen<CR>', { 
 	noremap = true, silent = true 
 })
 
