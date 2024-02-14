@@ -1,4 +1,4 @@
--- This file si main setting of neovim. Keep It Clean...
+-- This file is main setting of neovim. Keep It Clean...
 -- 基本設定
 vim.o.number = true               -- 行番号表示
 vim.o.relativenumber = true       -- 相対行番号表示
@@ -25,15 +25,13 @@ local option={
 }
 vim.loader.enable()
 
+
 -- キーマッピング
 vim.api.nvim_set_keymap('n', '<Space>', ':nohlsearch<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = true })
 --colorscheme
 --
--------------------------------------------------------------------------------
---Luaのお勉強
--------------------------------------------------------------------------------
---
+
 -------------------------------------------------------------------------------
 --plugin management (lazy.nvim)
 -------------------------------------------------------------------------------
@@ -51,17 +49,38 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup(
 	{
-		{"nvim-tree/nvim-tree.lua"},
-		{"nvim-tree/nvim-web-devicons"},
+		{
+			"nvim-tree/nvim-tree.lua",
+			--keys={"<Leader>;;",":NvimTreeOpen", disc="open tree"},
+			--event="VimEnter",
+			dependencies="nvim-tree/nvim-web-devicons",
+			opt={
+				sort = {
+					sorter = "case_sensitive",
+				},
+				view = {
+					width = 30,
+				},
+				renderer = {
+					group_empty = true,
+				},
+				filters = {
+					dotfiles = true,
+				},
+			}
+		},
 		{"lervag/vimtex",ft={"tex"}},
 		{"akinsho/toggleterm.nvim",
-		version="*",
-		config=true
-		},
-		{"itchyny/lightline.vim"},
-		{"folke/tokyonight.nvim",
 		lazy=true,
-		cmd="ToggleTerm",
+		version="*",
+		config=true,
+		keys={"<Leader>tt",":ToggleTerm",disk="open terminal"},
+		},
+		{"itchyny/lightline.vim",
+			event="VimEnter",
+		},
+		{"folke/tokyonight.nvim",
+		event="VimEnter",
 		priority=1000,
 		opts={}
 		},
@@ -69,18 +88,31 @@ require("lazy").setup(
 		event="InsertEnter",
 		opts={}--this is equalent to setup ({}) fundtion
 		},
-		{"preservim/nerdcommenter"},
-		{"lambdalisue/fern.vim"},
-		{"lambdalisue/glyph-palette.vim"},
-		{"nvim-lua/plenary.nvim"},
-		{"nvim-telescope/telescope.nvim", tag='0.1.5'},
-		{"nvim-telescope/telescope-file-browser.nvim"},
-    {"uga-rosa/ccc.nvim"},
-		{"BurntSushi/ripgrep"},
-		{"nvim-treesitter/nvim-treesitter"},
-    {"neovim/nvim-lspconfig"},--lsp
-    {"williamboman/mason.nvim",lazy=true, },
-    {"williamboman/mason-lspconfig.nvim",lazy=true,},
+		{"preservim/nerdcommenter",
+			event="VimEnter"},
+		--{"lambdalisue/glyph-palette.vim"},
+		{"nvim-telescope/telescope.nvim",
+		event="VimEnter",
+		tag='0.1.5'},
+		{"nvim-telescope/telescope-file-browser.nvim",
+		event="VimEnter",
+		},
+    {"uga-rosa/ccc.nvim",
+			event="VimEnter"
+		},--colorlize.luaなんてのもあるようです
+		--{"BurntSushi/ripgrep"},
+		{"nvim-treesitter/nvim-treesitter",
+		event="VimEnter"
+		},
+    {"neovim/nvim-lspconfig",
+			event="VimEnter"
+		},--lsp
+    {"williamboman/mason.nvim",
+		event="VimEnter"
+		},
+    {"williamboman/mason-lspconfig.nvim",
+		event="VimEnter"
+		},
 		--compilation:ddcを使おうとしていたが挫折
 		{ "L3MON4D3/LuaSnip",
 		version="v2.*",
@@ -88,15 +120,27 @@ require("lazy").setup(
 		dependencies="saadparwaiz1/cmp_luasnip",
 		event="InsertEnter"
 		},
-		{ "hrsh7th/nvim-cmp",event="InsertEnter" },
-		{ "hrsh7th/cmp-nvim-lsp",event="InsertEnter"},
-		{"hrsh7th/vim-vsnip",event="InsertEnter"},
-		{ "hrsh7th/cmp-buffer",event="InsertEnter"},
-		{"mhartington/formatter.nvim"},
-		{"vim-skk/skkeleton",event="InsertEnter"},
-		{"pocco81/auto-save.nvim"},
-		{"natecraddock/workspaces.nvim"},
-		{"dstein64/vim-startuptime"},
+		{ "hrsh7th/nvim-cmp",
+			event="InsertEnter"
+		},
+		{ "hrsh7th/cmp-nvim-lsp",
+			event="InsertEnter"
+		},
+		{"hrsh7th/vim-vsnip",
+			event="InsertEnter"
+		},
+		{ "hrsh7th/cmp-buffer",
+			event="InsertEnter"
+		},
+		{"mhartington/formatter.nvim",
+		event="InsertLeave"
+		},
+		--{"vim-skk/skkeleton",event="InsertEnter"},
+		{"pocco81/auto-save.nvim",
+		event="VimEnter"},
+		{"dstein64/vim-startuptime",
+			cmd={"StartupTime"},
+		},
 		{
     'goolord/alpha-nvim',
 		event="VimEnter",
@@ -109,33 +153,30 @@ require("lazy").setup(
     end
 		},
 
-		{"romgrk/barbar.nvim",dependencies = {
+		{"romgrk/barbar.nvim",
+		event="VimEnter",
+		dependencies = {
       'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
       'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
     },
     init = function() vim.g.barbar_auto_setup = true end,
     opts = {
       -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
-      animation = true,
+      animation = false,
       -- insert_at_start = true,
       -- …etc.
     },
     version = '^1.0.0', -- optional: only update when a new 1.x version is released
 		},
-		{"Shatur/neovim-session-manager"}
+		{"Shatur/neovim-session-manager",
+		event="VimEnter"
+	},
+		{"lewis6991/gitsigns.nvim",
+		event="VimEnter"},
+		{"echasnovski/mini.indentscope",
+		event="Vimenter"}
 	}
 )
--------------------------------------------------------------------------------
---Luaのお勉強
--------------------------------------------------------------------------------
-local function filetype()
-	if vim.bo.filetype =="tex" then
-		return "tex"
-	else
-		return "other"
-	end
-end
-
 -------------------------------------------------------------------------------
 --LSP setting
 -------------------------------------------------------------------------------
@@ -248,18 +289,6 @@ local LuaMS=require("lua")
 	LuaMS:loader()
 local texMS=require("tex")
 	texMS:loader()
---[[ls.add_snippets("lua",
-{
-	s("lua",{
-		t("haste on"),i(0),t("the moon")
-	})
-	--require("snippets.luasnip")
-}
-)]]
-
-
---require("luasnip.loaders.from_vscode").lazy_load({paths={"./snippets"}})
-
 -------------------------------------------------------------------------------
 --Formatter settings
 -------------------------------------------------------------------------------
@@ -454,29 +483,28 @@ alpha.setup(dashboard.opts)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- optionally enable 24-bit colour
+ --optionally enable 24-bit colour
 vim.opt.termguicolors = true
--- empty setup using defaults
-require("nvim-tree").setup()
+ --empty setup using defaults
 
--- OR setup with some options
+ --OR setup with some options
 require("nvim-tree").setup({
-  sort = {
-    sorter = "case_sensitive",
-  },
-  view = {
-    width = 30,
-  },
-  renderer = {
-    group_empty = true,
-  },
-  filters = {
-    dotfiles = true,
-  },
+	sort = {
+		sorter = "case_sensitive",
+	},
+	view = {
+		width = 30,
+	},
+	renderer = {
+		group_empty = true,
+	},
+	filters = {
+		dotfiles = true,
+	},
 })
 
 -------------------------------------------------------------------------------
---Color Scheme
+--Color Scheme (tokyonight)
 -------------------------------------------------------------------------------
 --tokyonight setting
 require("tokyonight").setup(
@@ -608,6 +636,103 @@ require('session_manager').setup({
   max_path_length = 80,  -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
 })
 -------------------------------------------------------------------------------
+--Where is changed (gitsigns)
+-------------------------------------------------------------------------------
+require('gitsigns').setup {
+  signs = {
+    add          = { text = '󱋱' },
+    change       = { text = '│' },
+    delete       = { text = '_' },
+    topdelete    = { text = '‾' },
+    changedelete = { text = '~' },
+    untracked    = { text = '┆' },
+  },
+  signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
+  numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
+  linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
+  word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
+  watch_gitdir = {
+    follow_files = true
+  },
+  auto_attach = true,
+  attach_to_untracked = false,
+  current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+  current_line_blame_opts = {
+    virt_text = true,
+    virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+    delay = 1000,
+    ignore_whitespace = false,
+    virt_text_priority = 100,
+  },
+  current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
+  sign_priority = 6,
+  update_debounce = 100,
+  status_formatter = nil, -- Use default
+  max_file_length = 40000, -- Disable if file is longer than this (in lines)
+  preview_config = {
+    -- Options passed to nvim_open_win
+    border = 'single',
+    style = 'minimal',
+    relative = 'cursor',
+    row = 0,
+    col = 1
+  },
+  yadm = {
+    enable = false
+  },
+}
+-------------------------------------------------------------------------------
+-- indent viewer (mini.indentscope)
+-------------------------------------------------------------------------------
+require('mini.indentscope').setup{
+	
+  -- Draw options
+  draw = {
+    -- Delay (in ms) between event and start of drawing scope indicator
+    delay = 100,
+
+    -- Animation rule for scope's first drawing. A function which, given
+    -- next and total step numbers, returns wait time (in ms). See
+    -- |MiniIndentscope.gen_animation| for builtin options. To disable
+    -- animation, use `require('mini.indentscope').gen_animation.none()`.
+    --<function: implements constant 20ms between steps>,
+
+    -- Symbol priority. Increase to display on top of more symbols.
+    priority = 2,
+  },
+
+  -- Module mappings. Use `''` (empty string) to disable one.
+  mappings = {
+    -- Textobjects
+    object_scope = 'ii',
+    object_scope_with_border = 'ai',
+
+    -- Motions (jump to respective border line; if not present - body line)
+    goto_top = '[i',
+    goto_bottom = ']i',
+  },
+
+  -- Options which control scope computation
+  options = {
+    -- Type of scope's border: which line(s) with smaller indent to
+    -- categorize as border. Can be one of: 'both', 'top', 'bottom', 'none'.
+    border = 'both',
+
+    -- Whether to use cursor column when computing reference indent.
+    -- Useful to see incremental scopes with horizontal cursor movements.
+    indent_at_cursor = true,
+
+    -- Whether to first check input line to be a border of adjacent scope.
+    -- Use it if you want to place cursor on function header to get scope of
+    -- its body.
+    try_as_border = false,
+  },
+
+  -- Which character to use for drawing scope indicator
+  symbol = '╎',
+}
+
+-------------------------------------------------------------------------------
 -- プラグインのキーマッピング (例: telescope)
 -------------------------------------------------------------------------------
 vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', { 
@@ -636,32 +761,32 @@ vim.g.loaded_python3_provider = 1
 -------------------------------------------------------------------------------
 --これからやっておくべきこと
 -------------------------------------------------------------------------------
---スニペット構成(とくにTeXのbegin-endらへんの話)
+--✓スニペット構成(とくにTeXのbegin-endらへんの話)(->environment入力はできる)
 --GITブランチの表示
 --✓自動補完機能(->snippetは接続だけしました)
---変更箇所表示(gitみたいな縦線)
+--✓変更箇所表示(gitみたいな縦線)(->gitsigns)
 --コマンド設定
---texの構成
---ワークスペース構成
+--✓texの構成(->あとはちまちまスニペット構成)
+--✓ワークスペース構成(->sessionにより解決)
 --フォーマッタ構成
---フォントサイズ調整in qt
+--✓フォントサイズ調整in qt(->フォント末尾のオプション)
 --lightline改善，ファイル読み込みとかワークスペースとか
 --gitも何とかしよう
 --✓変数が使われてるかどうかの表示(->どうやらLSPで自動的に行われているよう)
 --@windows ターミナル：powershellへ
---オープニング画面とかつけたい，VScode的な,nvchad的な
---✓自動保存に役立つ何か
+--✓オープニング画面とかつけたい，VScode的な,nvchad的な(->alpha)
+--✓自動保存に役立つ何か(->autosave)
 --コピペはクリップボードに一元化したい
---ファイルタイプ別のプラグイン呼び出し設定
---起動高速化
---タブも何とかしてえ
+--✓ファイルタイプ別のプラグイン呼び出し設定(->Lazy option)
+--起動高速化(->plugin設定を別に移す)
+--タブも何とかしてえ(->要操作性向上)
 --✓lspらへんの話の整理(->割と整った感はある，Masonのおかげ)
 --✓不要行間表示(->あんまいらんな．変なスペースがある行はLSPで表示されるようです)
---新しく開くファイルはタブで開く,だけどvスプリットさせたい
---✓ターミナル分割　
---インデントラインを引く
+--✓新しく開くファイルはタブで開く,だけどvスプリットさせたい(->toggleterm,ctrl-v)
+--✓ターミナル分割(->num+<ctrl><Leader>)
+--✓インデントラインを引く(->miniline?)
 --リロードコマンドを組む
 --toggleterm常時更新
---変数一覧表示python
---✓rename command(->:saveas)
---toggleterm devicons表示
+--変数一覧表示in python
+--rename command(->:saveas?)
+--✓nvim-tree devicons表示(->Fernから乗り換え)
