@@ -54,7 +54,7 @@ require("lazy").setup(
 			--keys={"<Leader>;;",":NvimTreeOpen", disc="open tree"},
 			--event="VimEnter",
 			dependencies="nvim-tree/nvim-web-devicons",
-			opt={
+			opts={
 				sort = {
 					sorter = "case_sensitive",
 				},
@@ -82,7 +82,7 @@ require("lazy").setup(
 		{"folke/tokyonight.nvim",
 		event="VimEnter",
 		priority=1000,
-		opts={}
+		opts=require("plugins.tokyonight")
 		},
 		{"windwp/nvim-autopairs",
 		event="InsertEnter",
@@ -97,8 +97,10 @@ require("lazy").setup(
 		{"nvim-telescope/telescope-file-browser.nvim",
 		event="VimEnter",
 		},
+
     {"uga-rosa/ccc.nvim",
-			event="VimEnter"
+			event="VimEnter",
+			opt=require("plugins.ccc")
 		},--colorlize.luaなんてのもあるようです
 		--{"BurntSushi/ripgrep"},
 		{"nvim-treesitter/nvim-treesitter",
@@ -260,34 +262,14 @@ local parse = require("luasnip.util.parser").parse_snippet
 local ms = ls.multi_snippet
 local k = require("luasnip.nodes.key_indexer").new_key
 
-local function fn(
-  args,     -- text from i(2) in this example i.e. { { "456" } }
-  parent,   -- parent snippet or parent node
-  user_args -- user_args from opts.user_args 
-)
-   return '[' .. args[1][1] .. user_args .. ']'
-end
-ls.add_snippets("all", {
-		s("trig", {
-		i(1), t '<-i(1) ',
-		f(fn,  -- callback (args, parent, user_args) -> string
-    {2}, -- node indice(s) whose text is passed to fn, i.e. i(2)
-    { user_args = { "user_args_value" }} -- opts
-		),
-		t ' i(2)->', i(2), t '<-i(2) i(0)->', i(0)
-		}),
-		s("HW", {
-			t("Hello,",i(1)," World!",i(1),i(0))
-		})
-})
 --global function for new line
 function Nl()
 	return t('', '')
 end
 
-local LuaMS=require("lua")
+local LuaMS=require("snips.lua")
 	LuaMS:loader()
-local texMS=require("tex")
+local texMS=require("snips.tex")
 	texMS:loader()
 -------------------------------------------------------------------------------
 --Formatter settings
@@ -507,38 +489,11 @@ require("nvim-tree").setup({
 --Color Scheme (tokyonight)
 -------------------------------------------------------------------------------
 --tokyonight setting
-require("tokyonight").setup(
-	{
-	style="moon",
-	transparent=false,
-	styles={
-		sidebars="transparent",
-		floats="transparent"
-		},
-	sidebars={"qf","help"},
-	lualine_bold=true,
-	on_colors=function(colors)
-		colors.fg_gutter="#ffba00"--number color
-		colors.fg_dark="#ff9955"--command line
-		colors.comment="#889fdd"--comment out
-		colors.fg="#aaccee"--地の文
-	end
-	}
-)
+--"./lua/plugins/tokyonight.lua"
 vim.cmd[[colorscheme tokyonight]]
 
 --CCC setting
-local ccc = require("ccc")
-ccc.setup({
-  highlighter = {
-    -- Default values
-    auto_enable = true,
-    max_byte = 100 * 1024,
-    filetypes = {},
-    excludes = {},
-    lsp = true,
-  },
-})
+--"./lua/plugins/ccc.lua"
 
 --ToggleTerm setting
 require("toggleterm").setup{
