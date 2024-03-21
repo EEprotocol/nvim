@@ -1,22 +1,29 @@
 -- This file is main setting of neovim. Keep It Clean...
 -- 基本設定
+vim.o.langmenu = 'en_US.UTF-8'
+vim.env.LANG = 'en_US.UTF-8'
+vim.o.ambiwidth = 'double'				-- 全角は二つ分で表示
 vim.o.number = true               -- 行番号表示
 vim.o.relativenumber = true       -- 相対行番号表示
 vim.o.tabstop = 2                 -- タブの幅
+vim.o.expandtab=true							-- 上のタブ幅の有効化
 vim.o.softtabstop = 2             -- インデントに使用するスペースの数
+vim.o.autoindent=true
 vim.o.shiftwidth = 2              -- シフト幅
 vim.o.cursorline = true						-- 行線表示
 vim.o.colorcolumn = "80"		  		-- 列線表示
 vim.o.directory="./"							-- swap file place
 vim.o.smartindent=true            -- mk indent according to the block
 --vim.o.guifont="default:h20"
-vim.o.guifont="CaskaydiaMono Nerd Font Mono:h13"--Font
+vim.o.guifont="CaskaydiaMono Nerd Font Mono:h11"--Font
 vim.o.guifontwide="30"
 vim.o.hlsearch=true								--high light for search
 --local setting
 vim.opt.undofile=true
 vim.opt.autochdir=true            --change the work directory automatically
-vim.opt.wrap=false               --set no wrap
+vim.opt.wrap=false                --set no wrap
+vim.opt.inccommand="split"        --??
+vim.opt.clipboard="unnamed"       --use clipboard
 local option={
 	encoding="utf-8",
 	fileencoding="utf-8",
@@ -50,6 +57,13 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup(
 	{
 		{
+    'adelarsq/image_preview.nvim',
+    event = 'VeryLazy',
+    config = function()
+        require("image_preview").setup()
+    end
+		},	
+		{
 			"nvim-tree/nvim-tree.lua",
 			--keys={"<Leader>;;",":NvimTreeOpen", disc="open tree"},
 			--event="VimEnter",
@@ -77,7 +91,6 @@ require("lazy").setup(
 		keys={"<Leader>tt",":ToggleTerm",disk="open terminal"},
 		},
 		{"itchyny/lightline.vim",
-			event="VimEnter",
 		},
 		{"folke/tokyonight.nvim",
 		event="VimEnter",
@@ -176,7 +189,21 @@ require("lazy").setup(
 		{"lewis6991/gitsigns.nvim",
 		event="VimEnter"},
 		{"echasnovski/mini.indentscope",
-		event="Vimenter"}
+		event="Vimenter"},
+		{"EEprotocol/Arduineovim"},
+		{"toppair/peek.nvim",
+		event={"VeryLazy"},
+		ft={"markdown"},
+		build = "deno task --quiet build:fast",
+    config = function()
+        require("peek").setup()
+        -- refer to `configuration to change defaults`
+        vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+        vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+    end,
+		},
+		{dir="./Arduineovim"},
+		--{"EEprotocol/Arduineovim"}
 	}
 )
 -------------------------------------------------------------------------------
@@ -230,6 +257,10 @@ cmp.setup({
   })
 })
 
+-------------------------------------------------------------------------------
+--arduino
+-------------------------------------------------------------------------------
+--require("arduineovim").setup()
 -------------------------------------------------------------------------------
 --snippet settings
 -------------------------------------------------------------------------------
@@ -434,13 +465,14 @@ local jigen2={
 --used img2art in python
 dashboard.section.header.val = jigen2
 
+
  dashboard.section.buttons.val = {
    dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
    dashboard.button("b", "󰑙  Back to the Session", ":SessionManager load_last_session<CR>:set autochdir<CR>"),
    dashboard.button("r", "  Recently used files", ":Telescope oldfiles <CR>"),
    dashboard.button("f", "󰱼  Find file", ":Telescope find_files <CR>"),
    dashboard.button("t", "󱎸  Find text", ":Telescope live_grep <CR>"),
-   dashboard.button("c", "  Configuration", ":e ~/.config/nvim/init.lua<CR><Shift>U<CR>"),
+   dashboard.button("c", "  Configuration", ":e $MYVIMRC<CR><Shift>U<CR>"),
    dashboard.button("u", "󰮭  Lazy", ":Lazy<CR><Shift-u>"),
    dashboard.button("q", "󰩈  Quit Neovim", ":qa<CR>"),
 }
