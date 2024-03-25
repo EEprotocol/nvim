@@ -1,2 +1,3 @@
 # init.lua for nvim 
-it's for me!
+it's for me!¥n
+preparing CI...
