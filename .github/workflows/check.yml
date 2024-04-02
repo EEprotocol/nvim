@@ -31,6 +31,7 @@ jobs:
         run: |
           pipx install poetry
           pipx install pyright
+          sudo apt install snap
           sudo snap install neovim
 
       # Runs a single command using the runners shell
