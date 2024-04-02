@@ -2,15 +2,12 @@
 -- 基本設定
 vim.o.langmenu = 'en_US.UTF-8'
 vim.env.LANG = 'en_US.UTF-8'
-<<<<<<< HEAD
 vim.api.nvim_command('set encoding=utf-8')
 vim.o.encoding= 'utf-8'
 vim.o.fileencoding= 'utf-8'
 vim.o.fileformats= 'unix'
 --vim.o.ambiwidth = 'double'				-- 全角は二つ分で表示(->有効化してはならない)
-=======
 vim.o.ambiwidth = 'double'				-- 全角は二つ分で表示
->>>>>>> 1577b1fa24c0c2ae91b2695362b6bfa781dd7817
 vim.o.number = true               -- 行番号表示
 vim.o.relativenumber = true       -- 相対行番号表示
 vim.o.tabstop = 2                 -- タブの幅
@@ -30,11 +27,8 @@ vim.o.hlsearch=true								--high light for search
 --local setting
 vim.opt.undofile=true
 vim.opt.autochdir=true            --change the work directory automatically
-<<<<<<< HEAD
 vim.opt.wrap=false               --set no wrap
-=======
 vim.opt.wrap=false                --set no wrap
->>>>>>> 1577b1fa24c0c2ae91b2695362b6bfa781dd7817
 vim.opt.inccommand="split"        --??
 vim.opt.clipboard="unnamed"       --use clipboard
 local option={
@@ -202,16 +196,13 @@ require("lazy").setup(
 		{"lewis6991/gitsigns.nvim",
 		event="VimEnter"},
 		{"echasnovski/mini.indentscope",
-<<<<<<< HEAD
 		event="VimEnter"},
 		{"EEprotocol/Arduineovim",
 		event="VimEnter"};
     {"toppair/peek.nvim",
-=======
 		event="Vimenter"},
 		{"EEprotocol/Arduineovim"},
 		{"toppair/peek.nvim",
->>>>>>> 1577b1fa24c0c2ae91b2695362b6bfa781dd7817
 		event={"VeryLazy"},
 		ft={"markdown"},
 		build = "deno task --quiet build:fast",
@@ -222,14 +213,11 @@ require("lazy").setup(
         vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
     end,
 		},
-<<<<<<< HEAD
 		{"nvim-treesitter/nvim-treesitter-context",
 		event="VimEnter"}
 
-=======
 		{dir="./Arduineovim"},
 		--{"EEprotocol/Arduineovim"}
->>>>>>> 1577b1fa24c0c2ae91b2695362b6bfa781dd7817
 	}
 )
 -------------------------------------------------------------------------------
@@ -500,7 +488,6 @@ local jigen2={
 }
 --used img2art in python
 dashboard.section.header.val = jigen2
-<<<<<<< HEAD
 
  dashboard.section.buttons.val = {
    dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
@@ -525,7 +512,6 @@ dashboard.section.buttons.opts.hl = "AlphaButtons"
 
 dashboard.opts.opts.noautocmd = true
 alpha.setup(dashboard.opts)
-=======
 
 
  dashboard.section.buttons.val = {
@@ -551,7 +537,6 @@ dashboard.section.buttons.opts.hl = "AlphaButtons"
 
 dashboard.opts.opts.noautocmd = true
 alpha.setup(dashboard.opts)
->>>>>>> 1577b1fa24c0c2ae91b2695362b6bfa781dd7817
 
 -------------------------------------------------------------------------------
 --Filer setup (nvim-tree)
