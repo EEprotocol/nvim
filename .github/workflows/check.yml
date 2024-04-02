@@ -27,12 +27,13 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-      - name: Install poetry
+      - name: Install each
         run: |
           pipx install poetry
           pipx install pyright
           pipx install pynvim
           pipx install neovim
+          sudo snap install neovim
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
