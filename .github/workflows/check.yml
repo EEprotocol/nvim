@@ -31,12 +31,7 @@ jobs:
         run: |
           pipx install poetry
           pipx install pyright
-          pipx install neovim
           sudo snap install neovim
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'poetry'
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
