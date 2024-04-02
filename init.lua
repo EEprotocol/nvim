@@ -1,22 +1,33 @@
 -- This file is main setting of neovim. Keep It Clean...
 -- 基本設定
+vim.o.langmenu = 'en_US.UTF-8'
+vim.env.LANG = 'en_US.UTF-8'
+vim.api.nvim_command('set encoding=utf-8')
+vim.o.encoding= 'utf-8'
+vim.o.fileencoding= 'utf-8'
+vim.o.fileformats= 'unix'
+--vim.o.ambiwidth = 'double'				-- 全角は二つ分で表示(->有効化してはならない)
 vim.o.number = true               -- 行番号表示
 vim.o.relativenumber = true       -- 相対行番号表示
 vim.o.tabstop = 2                 -- タブの幅
+vim.o.expandtab=true							-- 上のタブ幅の有効化
 vim.o.softtabstop = 2             -- インデントに使用するスペースの数
 vim.o.shiftwidth = 2              -- シフト幅
+vim.o.autoindent= true
 vim.o.cursorline = true						-- 行線表示
 vim.o.colorcolumn = "80"		  		-- 列線表示
 vim.o.directory="./"							-- swap file place
 vim.o.smartindent=true            -- mk indent according to the block
 --vim.o.guifont="default:h20"
-vim.o.guifont="CaskaydiaMono Nerd Font Mono:h13"--Font
+vim.o.guifont="CaskaydiaMono Nerd Font Mono:h11"--Font
 vim.o.guifontwide="30"
 vim.o.hlsearch=true								--high light for search
 --local setting
 vim.opt.undofile=true
 vim.opt.autochdir=true            --change the work directory automatically
 vim.opt.wrap=false               --set no wrap
+vim.opt.inccommand="split"        --??
+vim.opt.clipboard="unnamed"       --use clipboard
 local option={
 	encoding="utf-8",
 	fileencoding="utf-8",
@@ -176,9 +187,29 @@ require("lazy").setup(
 		{"lewis6991/gitsigns.nvim",
 		event="VimEnter"},
 		{"echasnovski/mini.indentscope",
-		event="Vimenter"}
+		event="VimEnter"},
+		{"EEprotocol/Arduineovim",
+		event="VimEnter"};
+    {"toppair/peek.nvim",
+		event={"VeryLazy"},
+		ft={"markdown"},
+		build = "deno task --quiet build:fast",
+    config = function()
+        require("peek").setup()
+        -- refer to `configuration to change defaults`
+        vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+        vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+    end,
+		},
+		{"nvim-treesitter/nvim-treesitter-context",
+		event="VimEnter"}
+
 	}
 )
+-------------------------------------------------------------------------------
+--Arduienovim
+-------------------------------------------------------------------------------
+require("arduineovim").setup{}
 -------------------------------------------------------------------------------
 --LSP setting
 -------------------------------------------------------------------------------
@@ -411,6 +442,10 @@ local jigen={
 [[					            NeoVim-Qt v.0.9.4 started                      ]],
 }
 
+local major=vim.version()["major"]
+local minor=vim.version()["minor"]
+local patch=vim.version()["patch"]
+local nvim_version="v"..major.."."..minor.."."..patch
 local jigen2={
 [[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⢋⠏⡁⡻⣿            ]],
 [[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠟⢻⠏⡿⠻⠂⡃⢑⠌⠀⠀⢐⡼⣿          ]],
@@ -430,6 +465,8 @@ local jigen2={
 [[⣿⣿⣿⣿⣮⣄⡊⠊⠀⠄⠄⠚⠍⠡⠡⠟⢛⡛⢯⢋⢮⣾             ]],
 [[⣿⣿⣿⣿⣿⣿⣦⣴⡒⠄⡁⠀⠀⠀⠀⠀⠀⠈⢀⣶               ]],
 [[⣿⣿⣿⣿⣿⣿⣿⣿⣷⣾⣶⣿⣤⣾⣤⣬⣷⣾                 ]],
+[[]],
+[[	     Neovim ]]..nvim_version..[[ started!!]],
 }
 --used img2art in python
 dashboard.section.header.val = jigen2
@@ -440,7 +477,7 @@ dashboard.section.header.val = jigen2
    dashboard.button("r", "  Recently used files", ":Telescope oldfiles <CR>"),
    dashboard.button("f", "󰱼  Find file", ":Telescope find_files <CR>"),
    dashboard.button("t", "󱎸  Find text", ":Telescope live_grep <CR>"),
-   dashboard.button("c", "  Configuration", ":e ~/.config/nvim/init.lua<CR><Shift>U<CR>"),
+   dashboard.button("c", "  Configuration", ":e$MYVIMRC<CR><Shift>U<CR>"),
    dashboard.button("u", "󰮭  Lazy", ":Lazy<CR><Shift-u>"),
    dashboard.button("q", "󰩈  Quit Neovim", ":qa<CR>"),
 }
@@ -706,12 +743,42 @@ vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', {noremap = true})--terminal
 vim.api.nvim_set_keymap('t', '<c-[>', '<C-\\><C-n>', {noremap = true})--terminal normalmode
 --ターミナル分割は2<C-\>でできます！
 
+
 -- python3のパスを取得する
-local python3_path = vim.fn.trim(vim.fn.system('which python3'))
+-- pythonのパスを取得する
+local python3_path
+local python_path
+if vim.fn.has("win32")==1 then
+  python3_path=vim.fn.trim(vim.fn.system("gcm python3"))
+  python_path=vim.fn.trim(vim.fn.system("gcm python"))
+else
+  python3_path=vim.fn.trim(vim.fn.system("which python3"))
+  python_path=vim.fn.trim(vim.fn.system("which python"))
+end
+
 -- g:python3_host_progにpython3のパスを設定する
 vim.g.python3_host_prog = python3_path
 -- g:loaded_python3_providerを設定する
 vim.g.loaded_python3_provider = 1
+
+-- g:python_host_progにpythonのパスを設定する
+vim.g.python_host_prog = python_path
+-- g:loaded_python_providerを設定する
+vim.g.loaded_python_provider = 1
+
+--[[if os.getenv("VIRTUAL_ENV") then
+    local python_executable = ""
+    local virtual_env_bin_python = os.getenv("VIRTUAL_ENV") .. "/bin/python3"
+    if vim.fn.filereadable(virtual_env_bin_python) ~= 0 then
+        python_executable = vim.fn.substitute(vim.fn.system("which python"), '\n', '', 'g')
+    else
+        python_executable = vim.fn.substitute(vim.fn.system("which python"), '\n', '', 'g')
+    end
+    if python_executable ~= "" then
+        vim.g.python3_host_prog = python_executable
+    end
+end]]
+
 
 -------------------------------------------------------------------------------
 --これからやっておくべきこと
