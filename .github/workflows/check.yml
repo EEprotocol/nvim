@@ -36,7 +36,7 @@ jobs:
       - name: Inspect files before checkout 
         run: ls -la
       - name: install neovim
-        run: sudo apt install 
+        run: sudo apt install neovim
       - name: wake up
         run: nvim init.lua
 
