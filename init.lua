@@ -214,16 +214,14 @@ require("lazy").setup(
     end,
 		},
 		{"nvim-treesitter/nvim-treesitter-context",
-		event="VimEnter"}
+		event="VimEnter"},
 
-		{dir="./Arduineovim"},
-		--{"EEprotocol/Arduineovim"}
+		{"EEprotocol/Arduineovim"}
 	}
 )
 -------------------------------------------------------------------------------
 --Arduienovim
 -------------------------------------------------------------------------------
-require("arduineovim").setup{}
 -------------------------------------------------------------------------------
 --LSP setting
 -------------------------------------------------------------------------------
