@@ -133,7 +133,8 @@ require("lazy").setup(
 		event="VimEnter"
 		},
     {"williamboman/mason-lspconfig.nvim",
-		event="VimEnter"
+		event="VimEnter",
+    dependencies="hrsh7th/cmp-nvim-lsp"
 		},
 		--compilation:ddcを使おうとしていたが挫折
 		{ "L3MON4D3/LuaSnip",
@@ -256,15 +257,18 @@ capabilities = require("cmp_nvim_lsp").default_capabilities()
 --mason setting
 require("mason").setup()
 --mason config
-require("mason-lspconfig").setup{
+require("mason-lspconfig").setup()
+--[[require("mason-lspconfig").setup{
 	ensure_installed={"lua_ls","texlab","pyright","arduino_language_server"}
-}
+}]]
 -- launch-test.lua
-require"lspconfig".lua_ls.setup{}
-require"lspconfig".pyright.setup{}
-require"lspconfig".texlab.setup{}
-require"lspconfig".arduino_language_server.setup{}
--- lspの設定後に追加
+require("mason-lspconfig").setup_handlers({
+  require("lspconfig").lua_ls.setup({}),
+  require("lspconfig").pyright.setup({}),
+  require("lspconfig").texlab.setup({}),
+  require("lspconfig").arduino_language_server.setup({})
+})
+-- lspの設定後に追加)
 vim.opt.completeopt = "menu,menuone,noselect"
 local cmp = require("cmp")
 local luasnip = require("luasnip")
