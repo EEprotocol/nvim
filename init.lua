@@ -7,7 +7,6 @@ vim.o.encoding= 'utf-8'
 vim.o.fileencoding= 'utf-8'
 vim.o.fileformats= 'unix'
 --vim.o.ambiwidth = 'double'				-- 全角は二つ分で表示(->有効化してはならない)
-vim.o.ambiwidth = 'double'				-- 全角は二つ分で表示
 vim.o.number = true               -- 行番号表示
 vim.o.relativenumber = true       -- 相対行番号表示
 vim.o.tabstop = 2                 -- タブの幅
