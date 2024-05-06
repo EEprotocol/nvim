@@ -344,32 +344,23 @@ require("navigator").setup({
 --arduino
 -------------------------------------------------------------------------------
 ---arduino setup
-local lspconfig = require("lspconfig")
-lspconfig.arduino_language_server.setup {
+require("mason-lspconfig").setup_handlers({
+require("lspconfig").arduino_language_server.setup {
   cmd = {
     "arduino-language-server",
     " -cli-config",
     " ~/Appdata/Local/Arduino15/arduino-cli.yaml",
-    --"-cli",
-    --"arduino-cli",
-    --"-clangd",
-    --"clangd",
-    --"-fqbn",
-    --"arduino:avr:uno",
+    "-cli",
+    "arduino-cli",
+    "-clangd",
+    "clangd",
+    "-fqbn",
+    "arduino:avr:uno",
   },
   -- root_dir = lspconfig.util.find_git_ancestor,
-  root_dir = function(fname)
-    -- P(vim.fn.expand "%:p:h")
-    -- return vim.fn.expand "%:p:h"
-    local root_files = { vim.fn.expand "%" }
-    P(fname)
-    P(root_files)
-    local primary = lspconfig.util.root_pattern(unpack(root_files))(fname)
-    P(primary)
-    return primary
-  end,
-  filetypes = { "arduino", "ino" },
+    filetypes = { "arduino", "ino" },
 }--require("arduineovim").setup()
+})
 -------------------------------------------------------------------------------
 --snippet settings
 -------------------------------------------------------------------------------
