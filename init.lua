@@ -298,6 +298,7 @@ require("mason-lspconfig").setup_handlers({
 	require("lspconfig").lua_ls.setup({}),
 	require("lspconfig").pyright.setup({}),
 	require("lspconfig").texlab.setup({}),
+	--require("lspconfig").arduino_language_server.setup({}),
 })
 -- lspの設定後に追加)
 vim.opt.completeopt = "menu,menuone,noselect"
@@ -308,7 +309,11 @@ cmp.setup({
 		expand = function(args)
 			require("luasnip").lsp_expand(args.body)
 		end,
-	},
+  },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
 	mapping = cmp.mapping.preset.insert({
 		["<S-tab>"] = cmp.mapping.select_prev_item(),
 		["<tab>"] = cmp.mapping.select_next_item(),
@@ -328,7 +333,8 @@ cmp.setup({
 	sources = cmp.config.sources({
 		{ name = "nvim_lsp" },
 		{ name = "luasnip" },
-	}, {
+		{ name = "nvim_lsp_signature_help" },
+  },{
 		{ name = "buffer" },
 	}),
 })
@@ -346,6 +352,7 @@ require("navigator").setup({
 ---arduino setup
 require("mason-lspconfig").setup_handlers({
 require("lspconfig").arduino_language_server.setup {
+  capabilities = capabilities,
   cmd = {
     "arduino-language-server",
     " -cli-config",
@@ -359,6 +366,7 @@ require("lspconfig").arduino_language_server.setup {
   },
   -- root_dir = lspconfig.util.find_git_ancestor,
     filetypes = { "arduino", "ino" },
+    print("arduino lsp started.")
 }--require("arduineovim").setup()
 })
 -------------------------------------------------------------------------------
