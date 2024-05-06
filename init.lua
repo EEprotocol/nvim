@@ -170,6 +170,14 @@ require("lazy").setup({
 		event = "InsertEnter",
 	},
 	{
+		"hrsh7th/cmp-cmdline",
+		event = "InsertEnter",
+	},
+	{
+		"hrsh7th/cmp-path",
+		event = "InsertEnter",
+	},
+	{
 		"mhartington/formatter.nvim",
 		event = "InsertLeave",
 	},
