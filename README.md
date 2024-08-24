@@ -1,7 +1,14 @@
 # init.lua for nvim 
 it's for me!  
 preparing CI...
-## windows  
+## Installation
+### windows  
 ~/Appdata/Local/nvim/
-## linux  
+### linux  
 ~/.config/nvim/
+
+## Requirement  
+python3  
+Git  
+Yarn  
+npm  
