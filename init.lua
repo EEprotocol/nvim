@@ -308,6 +308,7 @@ require("mason-lspconfig").setup_handlers({
   require("lspconfig").pyright.setup({}),
   require("lspconfig").texlab.setup({}),
   require("lspconfig").arduino_language_server.setup({}),
+  require("lspconfig").typescript_language_server.setup({}),
 })
 -- lspの設定後に追加)
 vim.opt.completeopt = "menu,menuone,noselect"
@@ -821,9 +822,6 @@ require("gitsigns").setup({
     row = 0,
     col = 1,
   },
-  yadm = {
-    enable = false,
-  },
 })
 -------------------------------------------------------------------------------
 -- indent viewer (mini.indentscope)
@@ -923,6 +921,12 @@ vim.api.nvim_set_keymap("n", "<Leader>ff", "<cmd>Telescope find_files<CR>", {
   silent = true,
 })
 
+vim.api.nvim_set_keymap("n", "<Leader>d", "\"_d", {
+  noremap = true,
+  silent = true,
+})
+
+
 vim.api.nvim_set_keymap("n", "<Leader>;;", "<cmd>NvimTreeOpen<CR>", {
   noremap = true,
   silent = true,
@@ -973,6 +977,18 @@ vim.g.loaded_python3_provider = 1
 vim.g.python_host_prog = python_path
 -- g:loaded_python_providerを設定する
 vim.g.loaded_python_provider = 1
+
+-------------------------------------------------------------------------------
+--javascript Formatter
+-------------------------------------------------------------------------------
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+  pattern = "*.js",
+  callback = function()
+    vim.cmd("silent !npx prettier --write %")
+  end,
+})
+
 
 --[[if os.getenv("VIRTUAL_ENV") then
     local python_executable = ""
