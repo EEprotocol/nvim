@@ -29,7 +29,7 @@ vim.opt.autochdir = true      --change the work directory automatically
 vim.opt.wrap = false          --set no wrap
 vim.opt.wrap = false          --set no wrap
 vim.opt.inccommand = "split"  --??
-vim.opt.clipboard = "unnamed" --use clipboard
+vim.opt.clipboard = "unnamedplus" --use clipboard
 local option = {
   encoding = "utf-8",
   fileencoding = "utf-8",
@@ -300,16 +300,25 @@ require("mason").setup()
 --mason config
 require("mason-lspconfig").setup()
 --[[require("mason-lspconfig").setup{
-	ensure_installed={"lua_ls","texlab","pyright","arduino_language_server"}
+	ensure_installed={"lua_ls","texlab","pyright","arduino_language_server","clangd"}
 ]]
 -- launch-test.lua
-require("mason-lspconfig").setup_handlers({
-  require("lspconfig").lua_ls.setup({}),
-  require("lspconfig").pyright.setup({}),
-  require("lspconfig").texlab.setup({}),
-  require("lspconfig").arduino_language_server.setup({}),
-  require("lspconfig").typescript_language_server.setup({}),
-})
+--require("mason-lspconfig").setup_handlers({
+--  require("lspconfig").lua_ls.setup({}),
+--  require("lspconfig").pyright.setup({}),
+--  require("lspconfig").texlab.setup({}),
+--  require("lspconfig").arduino_language_server.setup({}),
+--  require("lspconfig").typescript_language_server.setup({}),
+--//})
+local lspconfig = require('lspconfig')
+local util = require('lspconfig.util')
+
+lspconfig.clangd.setup {
+  root_dir = function(fname)
+    return util.root_pattern('compile_commands.json', '.git')(fname)
+        or vim.fn.getcwd()
+  end
+}
 -- lspの設定後に追加)
 vim.opt.completeopt = "menu,menuone,noselect"
 local cmp = require("cmp")
@@ -966,6 +975,12 @@ if vim.fn.has("win32") == 1 then
 else
   python3_path = vim.fn.trim(vim.fn.system("which python3"))
   python_path = vim.fn.trim(vim.fn.system("which python"))
+vim.api.nvim_create_autocmd("InsertLeave", {
+  pattern = "*",
+  callback = function()
+    vim.fn.system("fcitx5-remote -c")
+  end,
+})
 end
 
 -- g:python3_host_progにpython3のパスを設定する
