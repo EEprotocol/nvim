@@ -25,10 +25,10 @@ vim.o.guifontwide = "30"
 vim.o.hlsearch = true                              --high light for search
 --local setting
 vim.opt.undofile = true
-vim.opt.autochdir = true      --change the work directory automatically
-vim.opt.wrap = false          --set no wrap
-vim.opt.wrap = false          --set no wrap
-vim.opt.inccommand = "split"  --??
+vim.opt.autochdir = true          --change the work directory automatically
+vim.opt.wrap = false              --set no wrap
+vim.opt.wrap = false              --set no wrap
+vim.opt.inccommand = "split"      --??
 vim.opt.clipboard = "unnamedplus" --use clipboard
 local option = {
   encoding = "utf-8",
@@ -143,7 +143,7 @@ require("lazy").setup({
   {
     "williamboman/mason-lspconfig.nvim",
     event = "VimEnter",
-    dependencies = "hrsh7th/cmp-nvim-lsp",
+    dependencies = { "hrsh7th/cmp-nvim-lsp", "williamboman/mason.nvim" },
   },
   --compilation:ddcを使おうとしていたが挫折
   {
@@ -184,6 +184,10 @@ require("lazy").setup({
   --{"vim-skk/skkeleton",event="InsertEnter"},
   {
     "pocco81/auto-save.nvim",
+    event = "VimEnter",
+  },
+  {
+    "junegunn/rainbow_parentheses.vim",
     event = "VimEnter",
   },
   {
@@ -298,9 +302,10 @@ capabilities = require("cmp_nvim_lsp").default_capabilities()
 --mason setting
 require("mason").setup()
 --mason config
-require("mason-lspconfig").setup()
+require("mason-lspconfig").setup {
+  ensure_installed = { "lua_ls", "texlab", "pyright", "arduino_language_server", "clangd" }
+}
 --[[require("mason-lspconfig").setup{
-	ensure_installed={"lua_ls","texlab","pyright","arduino_language_server","clangd"}
 ]]
 -- launch-test.lua
 --require("mason-lspconfig").setup_handlers({
@@ -434,34 +439,6 @@ texMS:loader()
 --Formatter settings
 -------------------------------------------------------------------------------
 -- Utilities for creating configurations
---[[config = function()
-  local biome = function()
-   local util = require("formatter.util")
-   return {
-     exe = "biome",
-     args = {
-       "format",
-       "--indent-width=4",
-       "--indent-style=tab",
-       -- `--stdin-file-path`の後にutil.escape_path(...)が来るようにする
-       "--stdin-file-path",
-       util.escape_path(util.get_current_buffer_file_path()),
-     },
-     stdin = true,
- }
-  end
-  require("formatter").setup({
-       filetype = {
-         javascript = { biome },
-         javascriptreat = { biome },
-         typescriptreact = { biome },
-         typescript = { biome },
-         lua = { biome },
-       },
-     })
-end
-]]
--- Utilities for creating configurations
 local util = require("formatter.util")
 -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
 local biome = function()
@@ -490,6 +467,15 @@ require("formatter").setup({
     -- Formatter configurations for filetype "lua" go here
     -- and will be executed in order
     lua = { biome },
+    cpp = {
+      function()
+        return {
+          exe = "clang-format",
+          args = { "--assume-filename", vim.api.nvim_buf_get_name(0) },
+          stdin = true,
+        }
+      end
+    },
 
     -- Use the special "*" filetype for defining formatter configurations on
     -- any filetype
@@ -499,6 +485,10 @@ require("formatter").setup({
       require("formatter.filetypes.any").remove_trailing_whitespace,
     },
   },
+})
+vim.api.nvim_create_autocmd("BufWritePost", {
+  pattern = "*",
+  command = "silent! FormatWrite",
 })
 
 -------------------------------------------------------------------------------
@@ -975,12 +965,12 @@ if vim.fn.has("win32") == 1 then
 else
   python3_path = vim.fn.trim(vim.fn.system("which python3"))
   python_path = vim.fn.trim(vim.fn.system("which python"))
-vim.api.nvim_create_autocmd("InsertLeave", {
-  pattern = "*",
-  callback = function()
-    vim.fn.system("fcitx5-remote -c")
-  end,
-})
+  vim.api.nvim_create_autocmd("InsertLeave", {
+    pattern = "*",
+    callback = function()
+      vim.fn.system("fcitx5-remote -c")
+    end,
+  })
 end
 
 -- g:python3_host_progにpython3のパスを設定する
@@ -1004,6 +994,11 @@ vim.api.nvim_create_autocmd("BufWritePost", {
   end,
 })
 
+-------------------------------------------------------------------------------
+--VimTex
+-------------------------------------------------------------------------------
+vim.g.vimtex_view_method = 'okular'
+vim.g.vimtex_view_general_viewer = 'okular'
 
 --[[if os.getenv("VIRTUAL_ENV") then
     local python_executable = ""
@@ -1017,6 +1012,23 @@ vim.api.nvim_create_autocmd("BufWritePost", {
         vim.g.python3_host_prog = python_executable
     end
 end]]
+
+
+-- Lua内でコマンドラインモードのマッピングを定義する例
+vim.api.nvim_create_autocmd('CmdlineEnter', {
+  pattern = 'w!!',
+  callback = function()
+    vim.cmd('cnoremap <expr> w!! v:cmd ? "silent! write !sudo tee % >/dev/null<CR> | edit!" : "w!!"')
+  end,
+})
+
+
+vim.keymap.set(
+  'c',
+  'w!!',
+  'w !sudo tee > /dev/null %<CR>:e!<CR>',
+  { noremap = true, silent = false }
+)
 
 -------------------------------------------------------------------------------
 --これからやっておくべきこと
