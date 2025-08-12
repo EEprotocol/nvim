@@ -1,3 +1,4 @@
+--test
 -- This file is main setting of neovim. Keep It Clean...
 -- 基本設定
 vim.o.langmenu = "en_US.UTF-8"
@@ -260,7 +261,7 @@ require("lazy").setup({
 
   { "EEprotocol/Arduineovim" },
   { "skanehira/preview-markdown.vim" },
-  { "ray-x/navigator.lua" },
+  --{ "ray-x/navigator.lua" },
   { "ray-x/guihua.lua" },
   { "ray-x/web-tools.nvim" },
 })
@@ -368,9 +369,9 @@ cmp.setup({
 -------------------------------------------------------------------------------
 --navigator
 -------------------------------------------------------------------------------
-require("navigator").setup({
-  mason = true,
-})
+--require("navigator").setup({
+--  mason = true,
+--})
 -------------------------------------------------------------------------------
 --arduino
 -------------------------------------------------------------------------------
@@ -965,23 +966,13 @@ if vim.fn.has("win32") == 1 then
 else
   python3_path = vim.fn.trim(vim.fn.system("which python3"))
   python_path = vim.fn.trim(vim.fn.system("which python"))
-  vim.api.nvim_create_autocmd("InsertLeave", {
-    pattern = "*",
-    callback = function()
-      vim.fn.system("fcitx5-remote -c")
-    end,
-  })
 end
 
 -- g:python3_host_progにpython3のパスを設定する
 vim.g.python3_host_prog = python3_path
 -- g:loaded_python3_providerを設定する
-vim.g.loaded_python3_provider = 1
+vim.g.loaded_python3_provider = 0
 
--- g:python_host_progにpythonのパスを設定する
-vim.g.python_host_prog = python_path
--- g:loaded_python_providerを設定する
-vim.g.loaded_python_provider = 1
 
 -------------------------------------------------------------------------------
 --javascript Formatter
@@ -1029,6 +1020,9 @@ vim.keymap.set(
   'w !sudo tee > /dev/null %<CR>:e!<CR>',
   { noremap = true, silent = false }
 )
+
+vim.g.terminal_emulator='foot'
+vim.o.shell="/bin/zsh"
 
 -------------------------------------------------------------------------------
 --これからやっておくべきこと
