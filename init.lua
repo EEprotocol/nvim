@@ -89,6 +89,7 @@ require("lazy").setup({
     },
   },
   { "lervag/vimtex",        ft = { "tex" } },
+  { "jxnblk/vim-mdx-js",        ft = { "mdx","md" } },
   {
     "akinsho/toggleterm.nvim",
     lazy = true,
@@ -478,12 +479,15 @@ require("formatter").setup({
       end
     },
 
+  markdown = {},
+  md = {},
+  mdx = {},
     -- Use the special "*" filetype for defining formatter configurations on
     -- any filetype
     ["*"] = {
       -- "formatter.filetypes.any" defines default configurations for any
       -- filetype
-      require("formatter.filetypes.any").remove_trailing_whitespace,
+      -- require("formatter.filetypes.any").remove_trailing_whitespace,
     },
   },
 })
