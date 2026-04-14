@@ -44,6 +44,12 @@ vim.api.nvim_set_keymap("n", "<Space>", ":nohlsearch<CR>", { noremap = true, sil
 vim.api.nvim_set_keymap("n", "<Leader>w", ":w<CR>", { noremap = true, silent = true })
 --colorscheme
 --
+vim.filetype.add({
+  extension = {
+    plt = "gnuplot",
+    gp = "gnuplot",
+  },
+})
 
 -------------------------------------------------------------------------------
 --plugin management (lazy.nvim)
@@ -196,6 +202,9 @@ require("lazy").setup({
     "dstein64/vim-startuptime",
     cmd = { "StartupTime" },
   },
+{
+  "vim-scripts/gnuplot.vim",
+},
   {
     "goolord/alpha-nvim",
     event = "VimEnter",
